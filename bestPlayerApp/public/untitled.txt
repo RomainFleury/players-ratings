@@ -1,0 +1,28 @@
+
+ZELO rating calculator & formula
+Player A: 	
+Player B: 	
+Weighting factor*: 	
+Score influence**: 	
+Score winner***: 	
+Score loser****: 	
+
+
+Player A	Player B
+Chance to win	50%	50%
+Player A wins	1025	975
+Player B wins	975	1025
+
+E_A = 1 / ( 1 + pow( 10, ( ( R_B - R_A ) / 400 ) ) )
+R_A_N = R_A + round( K * ( ( 1 - S_R ) + S_R * ( ( S_W - S_L ) / S_W ) ) * ( S_A - E_A ) )
+E_A: 	expected score for player A
+R_A: 	real/current ZELO-score of player A
+R_B: 	real/current ZELO-score of player B
+*K: 	weighting factor - normally 15, for top-players 10, for beginners 25
+The '1vs1 League' uses a value of 50 to get more significant changes for the scores after a match!
+**S_R: 	influence factor for ratio of winner and loser scores (0 <= S_R <= 1)
+The '1vs1 League' uses a value of 0.25 (25%).
+***S_W: 	match score winner
+****S_L: 	match score loser
+R_A_N: 	new ZELO-rating of player A
+

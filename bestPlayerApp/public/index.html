@@ -1,0 +1,74 @@
+<html lang="en" ng-app="bestPlayerApp">
+  <head>
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.css">
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<title>Best Player</title>
+	<style type="text/css">
+	.player{
+	  padding: 12px;
+	  border-bottom: 1px solid #ddd;
+  }
+  .player.best-player{
+	  font-weight:bold;
+	  font-size:1.1em;
+	  color:gold;
+	  background-color:green;
+	  margin-top:10px;
+  }
+  
+  .game{
+	  padding:25px 15px;
+   	font-size:1.2em;
+	border-bottom:1px solid #ddd;
+  }
+  
+    .game span{
+    	line-height:1.2em;
+    }
+	
+	.game span.score{
+		font-size:1.3em;
+		font-weight:bolder;
+	}
+	
+		.game span.vs{
+			font-size:1em;
+			bottom:0;
+			position:relative;
+		}
+	
+   .game .player-name{
+    	font-size:1.2em;
+    }
+	    .game .player-name.left{
+	    	text-align:right;
+	    }
+	    .game .player-name.right{
+	    	text-align:left;
+	    }
+	</style>
+  </head>
+  <body layout="column" ng-controller="AppCtrl">
+    <md-toolbar layout="row">
+      <md-button ng-click="toggleSidenav('left')" hide-gt-sm class="menuBtn">
+        <span class="visually-hidden">Menu</span>
+		<i class="fa fa-users"></i>
+      </md-button>
+	  <div class="md-toolbar-tools">
+	        <h3>
+	          <span>Best player app</span>
+	        </h3>
+	      </div>
+    </md-toolbar>
+    
+        <app-content></app-content>
+    <!-- Angular Material Dependencies -->
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.6/angular-animate.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-aria.min.js"></script>
+
+    <script src="//ajax.googleapis.com/ajax/libs/angular_material/0.8.2/angular-material.min.js"></script>
+	
+	<script src="app.js"></script>
+  </body>
+</html>
