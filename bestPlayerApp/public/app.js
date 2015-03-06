@@ -87,7 +87,12 @@
 					var ratingB = parseInt(playerB.rating);
 					
 					var scoreA = parseInt(self.newGame.scoreA);
-					var scoreB = parseInt(self.newGame.scoreB);			
+					var scoreB = parseInt(self.newGame.scoreB);
+					
+					// keep only score difference, to avoid giving points to a lost game
+					var scoreA = (scoreA-scoreB<0)?0:(scoreA-scoreB);
+					var scoreB = (scoreB-scoreA<0)?0:(scoreB-scoreA);
+												
 					
 					var newRatings = getNewRatings(ratingA, ratingB, scoreA, scoreB);
 					
