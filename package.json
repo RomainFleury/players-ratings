@@ -1,0 +1,19 @@
+{
+  "name": "players-ratings",
+  "version": "0.0.1",
+  "description": "Player ratings app",
+  "main": "Gruntfile.js",
+  "homepage": "http://bestplayer.parseapp.com",
+  "directories": {
+    "root": "./",
+    "application": "bestPlayerApp/public",
+    "tmp": "./.tmp",
+  },
+  "author": "Romain Fleury",
+  "devDependencies": {
+    "eslint-grunt": "^0.6.1",
+    "grunt": "^0.4.5",
+    "load-grunt-tasks": "^3.1.0",
+    "time-grunt": "^1.1.0"
+  }
+}
