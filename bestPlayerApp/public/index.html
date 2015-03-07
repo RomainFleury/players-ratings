@@ -12,7 +12,7 @@
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <link type="text/css" src="/styles/app.css" />
+    <link rel="stylesheet" type="text/css" href="/styles/app.css" />
 </head>
 <body layout="column" ng-controller="AppCtrl">
 <md-toolbar layout="row">
@@ -37,7 +37,9 @@
 
 <!-- build:js app.js -->
 <script src="/scripts/app.js"></script>
-<script src="/scripts/eloModule.js"></script>
+<script src="/scripts/eloModule/module.js"></script>
+<script src="/scripts/eloModule/adapted-elo-rating.js"></script>
+<script src="/scripts/eloModule/chovanec-elo-rating.js"></script>
 <script src="/scripts/players.js"></script>
 
 <!-- endbuild -->
