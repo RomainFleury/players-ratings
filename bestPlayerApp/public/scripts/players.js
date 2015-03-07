@@ -37,7 +37,7 @@
                 var playerIndex;
                 for (playerIndex in players) {
                     if (players[playerIndex] && players[playerIndex].name) {
-                        if (players[playerIndex].name.indexOf(name) === 0) {
+                        if (players[playerIndex].name.indexOf(name) === 0 && players[playerIndex].name === name) {
                             // player found, returning it.
                             return players[playerIndex];
                         }
@@ -112,7 +112,7 @@
                 "findById": findPlayerById,
                 "list": getPlayers,
                 "save": savePlayers,
-                "remover": removePlayer,
+                "remove": removePlayer,
                 "add": addPlayer,
                 "update": updatePlayer
             };

@@ -3,7 +3,8 @@
     angular.module("bestPlayerApp", [
         "ngMaterial",
         "eloRating",
-        "players"
+        "players",
+        "games"
     ]);
 
     angular.module("bestPlayerApp").config(['$mdThemingProvider', function($mdThemingProvider) {
@@ -21,7 +22,7 @@
 
     angular.module("bestPlayerApp").directive("appContent", function () {
 
-        var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, ratingService, playerService) {
+        var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, ratingService, playerService, gameService) {
             var self = this;
 
             self.games = [];
@@ -34,13 +35,11 @@
             };
 
             function getGames() {
-                var stored = JSON.parse(localStorage.getItem("games"));
-                return stored ? stored : [];
+                return gameService.list();
             }
 
-            function saveGames(games) {
-                localStorage.setItem("games", JSON.stringify(games));
-                self.games = games;
+            function getPlayers(){
+                return playerService.list();
             }
 
             function gameIsValid() {
@@ -77,8 +76,8 @@
                 var playerA;
                 var playerB;
 
-                var playerAName = self.newGame.playerAName;
-                var playerBName = self.newGame.playerBName;
+                var playerAName = self.newGame.playerAName.trim();
+                var playerBName = self.newGame.playerBName.trim();
 
                 // search players in players
                 playerA = playerService.findByName(playerAName);
@@ -124,10 +123,7 @@
 
                 var playerAExpectedVictory = (newRatings.expectedResult.A > newRatings.expectedResult.B);
 
-                var d = new Date();
                 var game = {
-                    id: d.getTime(),
-                    date: d,
                     playerAExpectedVictory: playerAExpectedVictory,
                     playerAVictory: (scoreA > scoreB),
 
@@ -146,23 +142,15 @@
                     playerBQuotation: Math.round((1/newRatings.expectedResult.B)*100)/100
                 };
 
+                // store game :
+                game = gameService.add(game);
                 var gameLog = "Game [" + game.id + "], " + playerA.name + " [" + ratingA + "=>" + playerA.rating + "], "
                     + playerB.name + " [" + ratingB + "=>" + playerB.rating + "]";
 
                 $log.debug(gameLog);
-/*
-                $mdToast.show(
-                    $mdToast.simple()
-                        .content(gameLog)
-                        .position("bottom right")
-                        .hideDelay(5000)
-                );
-*/
-                // store game :
-                var games = getGames();
-                games.push(game);
-                // save games
-                saveGames(games);
+
+                // update games list
+                self.games = getGames();
 
                 playerA.gamesCount += 1;
                 playerB.gamesCount += 1;
@@ -170,7 +158,7 @@
                 playerService.update(playerA);
                 playerService.update(playerB);
                 // udpate players list
-                self.players = playerService.list();
+                self.players = getPlayers();
 
                 // reset :
                 self.newGame = {};
@@ -229,7 +217,7 @@
 
             self.loadAll = function () {
                 self.games = getGames();
-                self.players = playerService.list();
+                self.players = getPlayers();
             };
 
 
@@ -277,6 +265,12 @@
             //controller.setFakeValues();
 
             controller.show = "list";
+
+            scope.gamesShown = 10;
+            scope.showMore = function(){
+                scope.gamesShown += scope.gamesShown;
+
+            };
             //console.log("appContent link executed");
             scope.mockAmount = 100;
         };
@@ -284,7 +278,7 @@
             templateUrl: "views/app-content.html",
             replace: true,
             controllerAs: "appContent",
-            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "AdaptedEloRating", "simplePlayersService", appContentDirectiveController],
+            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "AdaptedEloRating", "simplePlayersService" , "simpleGamesService", appContentDirectiveController],
             link: appContentLink
         };
     });
