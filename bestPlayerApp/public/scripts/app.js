@@ -74,10 +74,8 @@
                     return false;
                 }
 
-                var players = playerService.list();
-
-                var playerA = null;
-                var playerB = null;
+                var playerA;
+                var playerB;
 
                 var playerAName = self.newGame.playerAName;
                 var playerBName = self.newGame.playerBName;
@@ -152,14 +150,14 @@
                     + playerB.name + " [" + ratingB + "=>" + playerB.rating + "]";
 
                 $log.debug(gameLog);
-
+/*
                 $mdToast.show(
                     $mdToast.simple()
                         .content(gameLog)
                         .position("bottom right")
                         .hideDelay(5000)
                 );
-
+*/
                 // store game :
                 var games = getGames();
                 games.push(game);
@@ -188,15 +186,32 @@
                 var nB = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
 
                 // Nom des joueurs qui jouent beaucoup
-                var mnA = "Stade Rennais";
-                var mnB = "PSG";
+                var mnA = "Cormorans";
+                var mnB = "Corsaires";
 
-                nA = nA.replace(/[J-Z]+/g, mnA);
-                nB = nB.replace(/[J-Z]+/g, mnB);
+                var mockTeams = {
+                    "A":"Albatros",
+                    "B":"Boxers",
+                    "C":"Hogly",
+                    "D":"Renards",
+                    "E":"Remparts",
+                    "F":"Dragons",
+                    "G":"Castors",
+                    "H":"Coqs",
+                    "I":"Jokers"
+                };
+
+                nA = mockTeams[nA]?mockTeams[nA]:nA;
+                nB = mockTeams[nB]?mockTeams[nB]:nB;
+
+
+                nA = nA.replace(/^[J-Z]{1}$/g, mnA);
+                nB = nB.replace(/[J-Z]{1}$/g, mnB);
                 if (nA === nB) {
                     nA = mnA;
                     nB = mnB;
                 }
+
                 self.newGame = {
                     "playerAName": nA,
                     "scoreA": sA,
@@ -247,7 +262,7 @@
 
                 $mdToast.show(
                     $mdToast.simple()
-                        .content(count + " games in " + Math.round(end - start) + " ms.")
+                        .content(count + " games generated in " + Math.round(end - start) + " ms.")
                         .position("bottom right")
                         .hideDelay(3000)
                 );

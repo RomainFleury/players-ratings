@@ -14,6 +14,7 @@
                 <md-button layout="row" flex>
                     <span class="rating">{{player.rating | number:2}}</span>
                     <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
+                    <span ng-if="player.avatar"><img ng-src="player.avatar" /></span>
                 <md-tooltip>
                     {{player.gamesCount}} games played
                 </md-tooltip>
@@ -64,16 +65,19 @@
                     <div class="game" ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : 15 : 0"
                          layout="column">
                         <div layout="row">
-                            <span class="player-name left" ng-class="{'winner':game.playerAVictory}" flex>{{game.playerAName}}&nbsp;:&nbsp;</span><span
+                            <span class="player-name left" ng-class="{'winner':game.playerAVictory}" flex>
+                                {{game.playerAName}}<md-tooltip>{{(game.playerARatingAfterGame - game.playerARatingBeforeGame) | number:0}}</md-tooltip></md-tooltip>&nbsp;:&nbsp;</span>
+                            <span
                                 class="score" ng-class="{'winner':game.playerAVictory}">{{game.scoreA}}</span>
                             <span class="vs">&nbsp;.&nbsp;</span>
                             <span class="score" ng-class="{'winner':!game.playerAVictory}">{{game.scoreB}}</span>
-                            <span class="player-name right" ng-class="{'winner':!game.playerAVictory}" flex>&nbsp;:&nbsp;{{game.playerBName}}</span>
+                            <span class="player-name right" ng-class="{'winner':!game.playerAVictory}" flex>&nbsp;:&nbsp;
+                                {{game.playerBName}}<md-tooltip>{{(game.playerBRatingAfterGame - game.playerBRatingBeforeGame) | number:0}}</md-tooltip></md-tooltip></span>
                         </div>
                         <div class="cotes" layout="row">
-                            <span class="left" ng-class="{'winner-gamble':game.playerAExpectedVictory}" flex>{{game.playerAQuotation}}</span>
+                            <span class="left" ng-class="{'winner-gamble':game.playerAExpectedVictory}" flex>{{game.playerAQuotation | number:2}}</span>
                             <span class="vs">&nbsp;.&nbsp;</span>
-                            <span class="right" ng-class="{'winner-gamble':!game.playerAExpectedVictory}" flex>{{game.playerBQuotation}}</span>
+                            <span class="right" ng-class="{'winner-gamble':!game.playerAExpectedVictory}" flex>{{game.playerBQuotation | number:2}}</span>
                         </div>
                         <div class="date" ng-click="game.showdetails = game.showdetails?false:true" flex>
                             <span class="date">{{game.date | date : "longDate"}}</span>

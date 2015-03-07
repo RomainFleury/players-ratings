@@ -10,7 +10,7 @@
         // thanks to Chovanec.elo-rating github
         this.KFACTOR = 50;
         this.defaultRating = 1500;
-        this.gapWeight = 20;
+        this.gapWeight = 10;
         this.goalBonus = 1;
 
         this.$get = ["$http", "$log", "$q", function ($http, $log, $q) {
