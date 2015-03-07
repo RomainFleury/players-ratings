@@ -58,7 +58,8 @@
             }
 
             return {
-                "getNewRatings": getNewRatings
+                "getNewRatings": getNewRatings,
+                "scoreIsBool": false
             };
         }];
     }]);
