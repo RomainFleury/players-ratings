@@ -6,6 +6,13 @@
         "players"
     ]);
 
+    angular.module("bestPlayerApp").config(['$mdThemingProvider', function($mdThemingProvider) {
+        $mdThemingProvider.theme('default')
+            .primaryPalette('blue-grey')
+            .accentPalette('blue-grey')
+            .warnPalette('deep-orange');
+    }]);
+
     angular.module("bestPlayerApp").controller("AppCtrl", ["$scope", "$mdSidenav", function ($scope, $mdSidenav) {
         $scope.toggleSidenav = function (menuId) {
             $mdSidenav(menuId).toggle();
@@ -97,8 +104,9 @@
                 var scoreBForRating = parseInt(scoreB);
 
                 if (ratingService.scoreIsBool) {
-                    scoreAForRating = (scoreAForRating > 0) ? 1 : 0;
-                    scoreBForRating = (scoreBForRating > 0) ? 1 : 0;
+                    var comp = parseInt(scoreA - scoreB);
+                    scoreAForRating = (comp > 0) ? 1 : 0;
+                    scoreBForRating = (comp < 0) ? 1 : 0;
                 }
 
                 var gamesCountA = playerA.gamesCount;
@@ -137,12 +145,20 @@
                     scoreB: scoreB,
                     playerBRatingBeforeGame: ratingB,
                     playerBRatingAfterGame: playerB.rating,
-                    playerBQuotation: Math.round((1/newRatings.expectedResult.B)*100)/100,
+                    playerBQuotation: Math.round((1/newRatings.expectedResult.B)*100)/100
                 };
 
-                $log.debug("Game [" + game.id + "], " + playerA.name + " [" + ratingA + "=>" + playerA.rating + "], "
-                + playerB.name + " [" + ratingB + "=>" + playerB.rating + "]");
+                var gameLog = "Game [" + game.id + "], " + playerA.name + " [" + ratingA + "=>" + playerA.rating + "], "
+                    + playerB.name + " [" + ratingB + "=>" + playerB.rating + "]";
 
+                $log.debug(gameLog);
+
+                $mdToast.show(
+                    $mdToast.simple()
+                        .content(gameLog)
+                        .position("bottom right")
+                        .hideDelay(5000)
+                );
 
                 // store game :
                 var games = getGames();
@@ -234,13 +250,13 @@
 
             controller.show = "list";
             //console.log("appContent link executed");
-            scope.mockAmount = 10;
+            scope.mockAmount = 100;
         };
         return {
             templateUrl: "views/app-content.html",
             replace: true,
             controllerAs: "appContent",
-            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "ChovanecEloRating", "simplePlayersService", appContentDirectiveController],
+            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "AdaptedEloRating", "simplePlayersService", appContentDirectiveController],
             link: appContentLink
         };
     });

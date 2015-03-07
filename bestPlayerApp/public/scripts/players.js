@@ -19,7 +19,7 @@
                 "name": "",
                 "rating": basePoints,
                 "gamesCount":0,
-                "avatar":"/images/avatar_default.png"
+                "avatar":""
             };
 
             function getPlayers() {

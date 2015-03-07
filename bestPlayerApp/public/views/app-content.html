@@ -9,11 +9,16 @@
             </div>
         </md-toolbar>
         <md-content>
-            <div class="player" ng-class="{'best-player':$first}"
-                 ng-repeat="player in appContent.players | orderBy:'-rating'">
-                <i ng-if="$first" class="fa fa-trophy"></i> {{player.name}} ({{player.rating}}) (@{{player.gamesCount}})
+            <div class="player" ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
+                 ng-repeat="player in appContent.players | orderBy:'-rating'" >
+                <md-button layout="row" flex>
+                    <span class="rating">{{player.rating | number:2}}</span>
+                    <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
+                <md-tooltip>
+                    {{player.gamesCount}} games played
+                </md-tooltip>
+            </md-button>
             </div>
-            </ul>
         </md-content>
     </md-sidenav>
     <div layout="row" flex id="content">
@@ -22,7 +27,7 @@
                 <form name="newGameForm" layout="column" ng-submit="appContent.save()">
                     <div layout="row">
                         <div class="playerA" layout="column" flex>
-                            <h4>{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName : 'Joueur A'}}</h4>
+                            <div class="formTitle">{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName : 'Joueur A'}}</div>
                             <md-input-container>
                                 <label>Nom du joueur A</label>
                                 <input ng-model="appContent.newGame.playerAName" type="text" required/>
@@ -33,7 +38,7 @@
                             </md-input-container>
                         </div>
                         <div class="playerB" layout="column" flex>
-                            <h4>{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName : 'Joueur B'}}</h4>
+                            <div class="formTitle">{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName : 'Joueur B'}}</div>
                             <md-input-container>
                                 <label>Nom du joueur B</label>
                                 <input ng-model="appContent.newGame.playerBName" type="text" required/>
@@ -51,21 +56,19 @@
                 <md-content>
 
                     <div layout="row">
-                        <input ng-model="mockAmount" type="number"/>
-                        <md-button class="md-accent md-primary" ng-class="{loadingcursor:generating}" ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>Générer
-                            {{mockAmount}} matchs
-                        </md-button>
-                        <md-button type="button" class="md-warn md-raised" ng-click="appContent.resetAll()" flex>Tout
-                            vider
+                        <input ng-model="mockAmount" type="number" flex/>
+                        <md-button class="md-accent md-raised" ng-class="{loadingcursor:generating}" ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>+{{mockAmount}}?</md-button>
+                        <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer
                         </md-button>
                     </div>
                     <div class="game" ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : 15 : 0"
                          layout="column">
                         <div layout="row">
-                            <span class="player-name left" flex>{{game.playerAName}}&nbsp;:&nbsp;</span><span
+                            <span class="player-name left" ng-class="{'winner':game.playerAVictory}" flex>{{game.playerAName}}&nbsp;:&nbsp;</span><span
                                 class="score" ng-class="{'winner':game.playerAVictory}">{{game.scoreA}}</span>
                             <span class="vs">&nbsp;.&nbsp;</span>
-                            <span class="score" ng-class="{'winner':!game.playerAVictory}">{{game.scoreB}}</span><span class="player-name right" flex>&nbsp;:&nbsp;{{game.playerBName}}</span>
+                            <span class="score" ng-class="{'winner':!game.playerAVictory}">{{game.scoreB}}</span>
+                            <span class="player-name right" ng-class="{'winner':!game.playerAVictory}" flex>&nbsp;:&nbsp;{{game.playerBName}}</span>
                         </div>
                         <div class="cotes" layout="row">
                             <span class="left" ng-class="{'winner-gamble':game.playerAExpectedVictory}" flex>{{game.playerAQuotation}}</span>

@@ -2,17 +2,46 @@
     cursor:wait;
 }
 
+.formTitle{
+    font-size: 1.3em;
+    font-weight: 800;
+}
+
 .player {
-    padding: 12px;
     border-bottom: 1px solid #ddd;
 }
 
-.player.best-player {
+.player.gold-player {
+    color: #fff;
+    background-color: rgb(0,150,136);
+    margin-top: 10px;
+}
+
+.player.gold-player .name{
     font-weight: bold;
     font-size: 1.1em;
-    color: gold;
-    background-color: green;
-    margin-top: 10px;
+}
+
+.player .md-button .rating{
+    opacity:0.5;
+}
+
+
+.player.gold-player i{
+    color:gold;
+    font-size:1.2em;
+}
+
+.player.gold-player .md-button{
+    padding: 15px 6px;
+}
+
+.player.silver-player i{
+    color:silver;
+}
+
+.player.bronze-player i{
+    color:#CD7F32;
 }
 
 .game {
@@ -41,7 +70,7 @@
 }
 
 .game .winner{
-    color:green;
+    color:rgb(0,150,136);
 }
 
 .game .player-name.left, .game .cotes .left {
@@ -58,7 +87,7 @@
 }
 
 .game .cotes .winner-gamble{
-    color:green;
+    color:rgb(0,150,136);
     font-weight:500;
 }
 

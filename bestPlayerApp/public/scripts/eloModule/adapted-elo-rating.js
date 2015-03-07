@@ -9,10 +9,16 @@
     angular.module("eloRating").provider("AdaptedEloRating", [function () {
         // thanks to Chovanec.elo-rating github
         this.KFACTOR = 50;
+        this.defaultRating = 1500;
+        this.gapWeight = 20;
+        this.goalBonus = 1;
 
         this.$get = ["$http", "$log", "$q", function ($http, $log, $q) {
 
             var KFACTOR = this.KFACTOR;
+            var defaultRating = this.defaultRating ;
+            var gapWeight = this.gapWeight;
+            var goalBonus = this.goalBonus;
 
             function getNewRatings(ratingA, ratingB, scoreA, scoreB, gamesCountA, gamesCountB) {
 
@@ -20,9 +26,9 @@
                 var expectedA = expectedScores["A"];
                 var expectedB = expectedScores["B"];
 
-                var newRatings = calculateNewRatings(ratingA, ratingB, expectedA, expectedB, scoreA, scoreB);
+                var newRatings = calculateNewRatings(ratingA, ratingB, expectedA, expectedB, scoreA, scoreB,
+                    gamesCountA, gamesCountB);
 
-                debugger;
                 return {
                     "newRatings": newRatings, // new ranking number
                     "expectedResult": expectedScores // players cote %
@@ -38,22 +44,35 @@
                 return {"A": expectedScoreA, "B": expectedScoreB};
             }
 
-            function calculateNewRatings(ratingA, ratingB, expectedA, expectedB, scoreA, scoreB) {
+            function calculateNewRatings(ratingA, ratingB, expectedA, expectedB, scoreA, scoreB,
+                                         gamesCountA, gamesCountB) {
 
                 // transforming scores en 1 ou 0 pour respecter l'algo de base:
                 var victoryA = (scoreA > scoreB)?1:0;
-                var victoryB = !victoryA;
+                var victoryB = (scoreB > scoreA)?1:0;
 
-                // ajouter la prise en compte plus violente de l'écart entre les joueurs
-                // (ecart / 2) * KFACTOR * (1/expectedA);
+
+                // ajout de la prise en compte de l'écart entre les joueurs
+                var ratingGap = ratingA - ratingB;
+                var ratingGapPonderate = Math.abs(ratingGap / (KFACTOR /gapWeight));
 
                 // ajouter la prise en compte du nombre de matchs joués
+                var gamesGapA = gamesCountA - gamesCountB;
+                var gamesGapB = gamesCountB - gamesCountA;
+                //TODO
+
+                // ajout du nombre de buts marqués
+                var scoreBonusA = scoreA * (goalBonus);
+                var scoreBonusB = scoreB * (goalBonus);
+
+                // on ajuste le nombre de points à gagner en fonction de l'écart entre les joueurs
+                var newRatingA = ratingA + ( (KFACTOR + ratingGapPonderate) * ( victoryA - expectedA ));//* (1/expectedA));
+                var newRatingB = ratingB + ( (KFACTOR + ratingGapPonderate) * ( victoryB - expectedB ));// * (1/expectedB));
+
+                newRatingA += scoreBonusA;
+                newRatingB += scoreBonusB;
 
 
-                var newRatingA = ratingA + ( KFACTOR * ( victoryA - expectedA ) );
-                var newRatingB = ratingB + ( KFACTOR * ( victoryB - expectedB ) );
-
-                debugger;
                 return {"A": newRatingA, "B": newRatingB};
             }
 

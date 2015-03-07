@@ -36,8 +36,8 @@
             }
 
             function calculateNewRatings(ratingA, ratingB, expectedA, expectedB, scoreA, scoreB) {
-                var newRatingA = ratingA + Math.round(( KFACTOR * ( scoreA - expectedA ) ));
-                var newRatingB = ratingB + Math.round(( KFACTOR * ( scoreB - expectedB ) ));
+                var newRatingA = ratingA + ( KFACTOR * ( scoreA - expectedA ) );
+                var newRatingB = ratingB + ( KFACTOR * ( scoreB - expectedB ) );
                 return {"A": newRatingA, "B": newRatingB};
             }
 
