@@ -9,7 +9,7 @@
     angular.module("bestPlayerApp").config(['$mdThemingProvider', function($mdThemingProvider) {
         $mdThemingProvider.theme('default')
             .primaryPalette('blue-grey')
-            .accentPalette('blue-grey')
+            .accentPalette('brown')
             .warnPalette('deep-orange');
     }]);
 
