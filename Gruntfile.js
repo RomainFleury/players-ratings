@@ -9,7 +9,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 		eslint: {
-			all: ['bestPlayerApp/**/*.js']
+			all: ['bestPlayerApp/public/**/*.js']
 		}
     });
 	

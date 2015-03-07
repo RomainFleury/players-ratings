@@ -7,7 +7,7 @@
   "directories": {
     "root": "./",
     "application": "bestPlayerApp/public",
-    "tmp": "./.tmp",
+    "tmp": "./.tmp"
   },
   "author": "Romain Fleury",
   "devDependencies": {
