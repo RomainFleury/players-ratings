@@ -25,28 +25,34 @@
     <import-generated-data></import-generated-data>
     <div layout="row" flex id="content">
         <md-content flex class="md-padding">
+            <div layout="row" ng-show="debug">
+                <input ng-model="mockAmount" type="number" flex/>
+                <md-button class="md-accent md-raised" ng-class="{loadingcursor:generating}" ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>+{{mockAmount}}?</md-button>
+                <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer
+                </md-button>
+            </div>
             <div ng-if="true || appContent.show === 'add'">
                 <form name="newGameForm" layout="column" ng-submit="appContent.save()">
                     <div layout="row">
                         <div class="playerA" layout="column" flex>
-                            <div class="formTitle">{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName : 'Joueur A'}}</div>
+                            <div class="formTitle">{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName : 'Participant A'}}</div>
                             <md-input-container>
-                                <label>Nom du joueur A</label>
+                                <label>Nom du participant A</label>
                                 <input ng-model="appContent.newGame.playerAName" type="text" required/>
                             </md-input-container>
                             <md-input-container>
-                                <label>Score joueur A</label>
+                                <label>Score participant A</label>
                                 <input ng-model="appContent.newGame.scoreA" type="number" required/>
                             </md-input-container>
                         </div>
                         <div class="playerB" layout="column" flex>
-                            <div class="formTitle">{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName : 'Joueur B'}}</div>
+                            <div class="formTitle">{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName : 'Participant B'}}</div>
                             <md-input-container>
-                                <label>Nom du joueur B</label>
+                                <label>Nom du participant B</label>
                                 <input ng-model="appContent.newGame.playerBName" type="text" required/>
                             </md-input-container>
                             <md-input-container>
-                                <label>Score joueur B</label>
+                                <label>Score participant B</label>
                                 <input ng-model="appContent.newGame.scoreB" type="number" required/>
                             </md-input-container>
                         </div>
@@ -56,13 +62,6 @@
             </div>
             <div ng-if="true || appContent.show === 'list'">
                 <md-content>
-
-                    <div layout="row">
-                        <input ng-model="mockAmount" type="number" flex/>
-                        <md-button class="md-accent md-raised" ng-class="{loadingcursor:generating}" ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>+{{mockAmount}}?</md-button>
-                        <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer
-                        </md-button>
-                    </div>
                     <div class="game" ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : gamesShown : 0"
                          layout="column">
                         <div layout="row">
