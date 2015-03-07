@@ -221,7 +221,14 @@
             self.mockGames = function (count) {
                 $scope.generating = true;
                 var timer = "Mock " + count + " games";
-                var start = performance.now();
+                var start;
+                var end;
+                if(window.performance){
+                    start = window.performance.now();
+                }else{
+                    var d1 = new Date();
+                    start = d1.getTime();
+                }
                 console.time(timer);
                 var initialCount = parseInt(self.games.length);
                 while (self.games.length < (initialCount + count)) {
@@ -231,7 +238,13 @@
                     self.save();
                 }
                 console.timeEnd(timer);
-                var end = performance.now();
+                if(window.performance){
+                    end = window.performance.now();
+                }else{
+                    var d2 = new Date();
+                    end = d2.getTime();
+                }
+
                 $mdToast.show(
                     $mdToast.simple()
                         .content(count + " games in " + Math.round(end - start) + " ms.")
