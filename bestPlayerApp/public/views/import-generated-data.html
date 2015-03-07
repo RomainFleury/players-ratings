@@ -1,0 +1,18 @@
+<md-sidenav layout="column" class="md-sidenav-right md-whiteframe-z2" md-component-id="import-data-right">
+    <md-toolbar layout="row">
+        <div class="md-toolbar-tools">
+            <h3>
+                <span>Réafficher des résultats</span>
+            </h3>
+        </div>
+    </md-toolbar>
+    <md-content class="fileImportNav">
+        <div class="file"
+             layout="row"
+             ng-repeat="file in importFiles.files">
+            <md-button ng-click="importFiles.setData($index)" layout="row" flex>
+                {{file.name}}
+            </md-button>
+        </div>
+    </md-content>
+</md-sidenav>

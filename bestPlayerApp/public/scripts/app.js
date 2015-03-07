@@ -1,6 +1,7 @@
 (function () {
     "use strict";
     angular.module("bestPlayerApp", [
+        "ngTouch",
         "ngMaterial",
         "eloRating",
         "players",
@@ -174,27 +175,24 @@
                 var nB = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
 
                 // Nom des joueurs qui jouent beaucoup
-                var mnA = "Cormorans";
-                var mnB = "Corsaires";
+                var mnA = "Rennes";
+                var mnB = "Nantes";
 
                 var mockTeams = {
-                    "A":"Albatros",
-                    "B":"Boxers",
-                    "C":"Hogly",
-                    "D":"Renards",
-                    "E":"Remparts",
-                    "F":"Dragons",
-                    "G":"Castors",
-                    "H":"Coqs",
-                    "I":"Jokers"
+                    "A":"Brest",
+                    "B":"Bordeaux",
+                    "C":"La Roche sur Yon",
+                    "D":"Orléans",
+                    "E":"Tours",
+                    "F":"Poitiers"
                 };
 
                 nA = mockTeams[nA]?mockTeams[nA]:nA;
                 nB = mockTeams[nB]?mockTeams[nB]:nB;
 
 
-                nA = nA.replace(/^[J-Z]{1}$/g, mnA);
-                nB = nB.replace(/[J-Z]{1}$/g, mnB);
+                nA = nA.replace(/^[G-Z]{1}$/g, mnA);
+                nB = nB.replace(/[G-Z]{1}$/g, mnB);
                 if (nA === nB) {
                     nA = mnA;
                     nB = mnB;
@@ -220,6 +218,7 @@
                 self.players = getPlayers();
             };
 
+            $scope.refreshAll = self.loadAll;
 
             self.mockGames = function (count) {
                 $scope.generating = true;

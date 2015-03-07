@@ -4,7 +4,7 @@
         <md-toolbar layout="row">
             <div class="md-toolbar-tools">
                 <h3>
-                    <span>Joueurs</span>
+                    <span>Classement</span>
                 </h3>
             </div>
         </md-toolbar>
@@ -14,14 +14,15 @@
                 <md-button layout="row" flex>
                     <span class="rating">{{player.rating | number:2}}</span>
                     <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
-                    <span ng-if="player.avatar"><img ng-src="player.avatar" /></span>
-                <md-tooltip>
-                    {{player.gamesCount}} games played
-                </md-tooltip>
-            </md-button>
+                    <span class="avatar" ng-if="player.avatar"><img ng-src="{{player.avatar}}" /></span>
+                    <md-tooltip>
+                        {{player.gamesCount}} games played
+                    </md-tooltip>
+                </md-button>
             </div>
         </md-content>
     </md-sidenav>
+    <import-generated-data></import-generated-data>
     <div layout="row" flex id="content">
         <md-content flex class="md-padding">
             <div ng-if="true || appContent.show === 'add'">
@@ -62,7 +63,7 @@
                         <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer
                         </md-button>
                     </div>
-                    <div class="game" ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : 15 : 0"
+                    <div class="game" ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : gamesShown : 0"
                          layout="column">
                         <div layout="row">
                             <span class="player-name left" ng-class="{'winner':game.playerAVictory}" flex>
@@ -86,6 +87,7 @@
 								{{game | json}}
 						</pre>
                     </div>
+                    <div layout="row"><md-button class="md-accent" flex ng-click="showMore()">Montrer plus</md-button></div>
                 </md-content>
             </div>
         </md-content>

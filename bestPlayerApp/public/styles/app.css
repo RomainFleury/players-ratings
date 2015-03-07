@@ -44,6 +44,10 @@
     color:#CD7F32;
 }
 
+.player .avatar img{
+    max-height:24px;
+}
+
 .game {
     padding: 25px 15px;
     font-size: 1.3em;
