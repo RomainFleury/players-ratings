@@ -6,56 +6,56 @@
       "name": "Orléans",
       "rating": 1720.565849545609,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/orleans.jpg"
     },
     {
       "id": 2,
       "name": "Poitiers",
       "rating": 1397.1886357729777,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/logos/logo-poitiers.jpg"
     },
     {
       "id": 3,
       "name": "Nantes",
       "rating": 1699.8113642270223,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/logos/logo-nantes-2.jpg"
     },
     {
       "id": 4,
       "name": "Brest",
       "rating": 1728.2033361465449,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/logo_brest_150x140.jpg"
     },
     {
       "id": 5,
       "name": "Bordeaux",
       "rating": 1473.5207859069255,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/logo-bordeaux-club.jpg"
     },
     {
       "id": 6,
       "name": "Tours",
       "rating": 1701.4792140930745,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/logos/logo-Tours-new.jpg"
     },
     {
       "id": 7,
       "name": "Rennes",
       "rating": 1538.4670301301073,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/rennes.jpg"
     },
     {
       "id": 8,
       "name": "La Roche sur Yon",
       "rating": 1237.7966638534551,
       "gamesCount": 14,
-      "avatar": ""
+      "avatar": "http://www.hockeyfrance.com/images/logos/logo-la-roche-sur-yon-new.jpg"
     }
   ],
   "games": [
