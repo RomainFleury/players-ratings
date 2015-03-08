@@ -168,8 +168,8 @@
 
                 // store game :
                 game = gameService.add(game);
-                var gameLog = "Game [" + game.id + "], " + playerA.name + " [" + ratingA + "=>" + playerA.rating + "], "
-                    + playerB.name + " [" + ratingB + "=>" + playerB.rating + "]";
+                var gameLog = "Game [" + game.id + "], " + playerA.name + " [" + ratingA + "=>" + playerA.rating +
+                    "], " + playerB.name + " [" + ratingB + "=>" + playerB.rating + "]";
 
                 $log.debug(gameLog);
 
@@ -194,7 +194,9 @@
             self.setFakeValues = function () {
                 var sA = Math.round((Math.random() * 10) / 2);
                 var sB = Math.round((Math.random() * 10) / 2);
-                if (sA === sB && ratingService.scoreIsBool) sA += 1;
+                if (sA === sB && ratingService.scoreIsBool){
+                    sA += 1;
+                }
 
                 var nA = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
                 var nB = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
@@ -279,7 +281,7 @@
                 $scope.generating = false;
 
                 //$log.info("games : " + self.games.length);
-            }
+            };
         };
 
         var appContentLink = function (scope, element, attrs, controller) {
