@@ -25,13 +25,19 @@
     <import-generated-data></import-generated-data>
     <div layout="row" flex id="content">
         <md-content flex class="md-padding">
-            <div layout="row" ng-show="debug">
+            <div layout="column" ng-show="debug">
+                <div>
+                    <h3>Générer des rencontres</h3>
+                </div>
+                <div layout="row">
                 <input ng-model="mockAmount" type="number" flex/>
-                <md-button class="md-accent md-raised" ng-class="{loadingcursor:generating}" ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>+{{mockAmount}}?</md-button>
-                <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer
+                <md-button class="md-accent md-raised" ng-class="{loadingcursor:generating}" ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>Générer</md-button>
+                <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer tout
                 </md-button>
+                </div>
+                <div>&nbsp;</div>
             </div>
-            <div ng-if="true || appContent.show === 'add'">
+            <div ng-if="!debug">
                 <form name="newGameForm" layout="column" ng-submit="appContent.save()">
                     <div layout="row">
                         <div class="playerA" layout="column" flex>
@@ -60,7 +66,7 @@
                     <md-button class="md-raised md-primary" flex>Ajouter ce résultat</md-button>
                 </form>
             </div>
-            <div ng-if="true || appContent.show === 'list'">
+            <div ng-if="true">
                 <md-content>
                     <div class="game" ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : gamesShown : 0"
                          layout="column">
