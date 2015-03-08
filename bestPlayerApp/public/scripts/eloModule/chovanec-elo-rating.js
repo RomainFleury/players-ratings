@@ -43,7 +43,8 @@
 
             return {
                 "getNewRatings": getNewRatings,
-                "scoreIsBool": true
+                "scoreIsBool": true,
+                "drawAble": false
             };
         }];
     }]);

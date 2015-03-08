@@ -8,7 +8,7 @@
         "games"
     ]);
 
-    angular.module("bestPlayerApp").config(['$mdThemingProvider', function($mdThemingProvider) {
+    angular.module("bestPlayerApp").config(['$mdThemingProvider', function ($mdThemingProvider) {
         $mdThemingProvider.theme('default')
             .primaryPalette('blue-grey')
             .accentPalette('brown')
@@ -29,7 +29,7 @@
             self.games = [];
             self.players = [];
             self.loading = true;
-            self.newGame = {};
+            self.newGame = {date:new Date()};
 
             self.toggleTab = function () {
                 $mdSidenav("left").toggle();
@@ -39,7 +39,7 @@
                 return gameService.list();
             }
 
-            function getPlayers(){
+            function getPlayers() {
                 return playerService.list();
             }
 
@@ -61,19 +61,16 @@
                     $log.error("player B score not a number");
                     valid = false;
                 }
-                if (parseInt(self.newGame.scoreA) === parseInt(self.newGame.scoreB)) {
-                    $log.error("player A score === player B score");
-                    valid = false;
+                if (!ratingService.drawAble) {
+                    if (parseInt(self.newGame.scoreA) === parseInt(self.newGame.scoreB)) {
+                        $log.error("player A score === player B score");
+                        valid = false;
+                    }
                 }
                 return valid;
             }
 
-            self.save = function () {
-
-                if (!gameIsValid()) {
-                    return false;
-                }
-
+            function preparePlayers() {
                 var playerA;
                 var playerB;
 
@@ -92,31 +89,56 @@
                     playerB = playerService.add(playerBName);
                 }
 
-                var ratingA = parseInt(playerA.rating);
-                var ratingB = parseInt(playerB.rating);
+                return {"A": playerA, "B": playerB};
+            }
 
-                var scoreA = parseInt(self.newGame.scoreA);
-                var scoreB = parseInt(self.newGame.scoreB);
+            function scoresForRating(scoreA, scoreB) {
+                scoreA = parseInt(scoreA);
+                scoreB = parseInt(scoreB);
 
-                var scoreAForRating = parseInt(scoreA);
-                var scoreBForRating = parseInt(scoreB);
+                var scoreAForRating = scoreA;
+                var scoreBForRating = scoreB;
 
                 if (ratingService.scoreIsBool) {
                     var comp = parseInt(scoreA - scoreB);
                     scoreAForRating = (comp > 0) ? 1 : 0;
                     scoreBForRating = (comp < 0) ? 1 : 0;
                 }
+                return {"A": scoreAForRating, "B": scoreBForRating};
+            }
 
-                var gamesCountA = playerA.gamesCount;
-                var gamesCountB = playerB.gamesCount;
+            function prepareDate(){
+                return self.newGame.date;
+            }
+
+            self.save = function () {
+
+                if (!gameIsValid()) {
+                    return false;
+                }
+
+                var playersPrepared = preparePlayers();
+                var playerA = playersPrepared.A;
+                var playerB = playersPrepared.B;
+
+                var ratingA = parseInt(playerA.rating);
+                var ratingB = parseInt(playerB.rating);
+
+                var scoreA = parseInt(self.newGame.scoreA);
+                var scoreB = parseInt(self.newGame.scoreB);
+
+                var scores = scoresForRating(scoreA, scoreB);
+                var scoreAForRating = scores.A;
+                var scoreBForRating = scores.B;
+
 
                 var newRatings = ratingService.getNewRatings(
                     ratingA,
                     ratingB,
                     scoreAForRating,
                     scoreBForRating,
-                    gamesCountA,
-                    gamesCountB
+                    playerA.gamesCount,
+                    playerB.gamesCount
                 );
 
                 playerA.rating = newRatings.newRatings.A;
@@ -125,6 +147,7 @@
                 var playerAExpectedVictory = (newRatings.expectedResult.A > newRatings.expectedResult.B);
 
                 var game = {
+                    date:prepareDate(),
                     playerAExpectedVictory: playerAExpectedVictory,
                     playerAVictory: (scoreA > scoreB),
 
@@ -133,14 +156,14 @@
                     scoreA: scoreA,
                     playerARatingBeforeGame: ratingA,
                     playerARatingAfterGame: playerA.rating,
-                    playerAQuotation: Math.round((1/newRatings.expectedResult.A)*100)/100,
+                    playerAQuotation: Math.round((1 / newRatings.expectedResult.A) * 100) / 100,
 
                     playerBId: playerB.id,
                     playerBName: playerB.name,
                     scoreB: scoreB,
                     playerBRatingBeforeGame: ratingB,
                     playerBRatingAfterGame: playerB.rating,
-                    playerBQuotation: Math.round((1/newRatings.expectedResult.B)*100)/100
+                    playerBQuotation: Math.round((1 / newRatings.expectedResult.B) * 100) / 100
                 };
 
                 // store game :
@@ -162,14 +185,16 @@
                 self.players = getPlayers();
 
                 // reset :
-                self.newGame = {};
+                self.newGame = {
+                    date:game.date
+                };
                 //self.setFakeValues();
             };
 
             self.setFakeValues = function () {
                 var sA = Math.round((Math.random() * 10) / 2);
                 var sB = Math.round((Math.random() * 10) / 2);
-                if (sA === sB) sA += 1;
+                if (sA === sB && ratingService.scoreIsBool) sA += 1;
 
                 var nA = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
                 var nB = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
@@ -179,16 +204,16 @@
                 var mnB = "Nantes";
 
                 var mockTeams = {
-                    "A":"Brest",
-                    "B":"Bordeaux",
-                    "C":"La Roche sur Yon",
-                    "D":"Orléans",
-                    "E":"Tours",
-                    "F":"Poitiers"
+                    "A": "Brest",
+                    "B": "Bordeaux",
+                    "C": "La Roche sur Yon",
+                    "D": "Orléans",
+                    "E": "Tours",
+                    "F": "Poitiers"
                 };
 
-                nA = mockTeams[nA]?mockTeams[nA]:nA;
-                nB = mockTeams[nB]?mockTeams[nB]:nB;
+                nA = mockTeams[nA] ? mockTeams[nA] : nA;
+                nB = mockTeams[nB] ? mockTeams[nB] : nB;
 
 
                 nA = nA.replace(/^[G-Z]{1}$/g, mnA);
@@ -225,11 +250,10 @@
                 var timer = "Mock " + count + " games";
                 var start;
                 var end;
-                if(window.performance){
+                if (window.performance) {
                     start = window.performance.now();
-                }else{
-                    var d1 = new Date();
-                    start = d1.getTime();
+                } else {
+                    start = new Date().getTime();
                 }
                 console.time(timer);
                 var initialCount = parseInt(self.games.length);
@@ -240,11 +264,10 @@
                     self.save();
                 }
                 console.timeEnd(timer);
-                if(window.performance){
+                if (window.performance) {
                     end = window.performance.now();
-                }else{
-                    var d2 = new Date();
-                    end = d2.getTime();
+                } else {
+                    end = new Date().getTime();
                 }
 
                 $mdToast.show(
@@ -266,18 +289,19 @@
             controller.show = "list";
 
             scope.gamesShown = 10;
-            scope.showMore = function(){
+            scope.showMore = function () {
                 scope.gamesShown += scope.gamesShown;
-
             };
             //console.log("appContent link executed");
             scope.mockAmount = 100;
+
+            controller.newGame.date = new Date();
         };
         return {
             templateUrl: "views/app-content.html",
             replace: true,
             controllerAs: "appContent",
-            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "AdaptedEloRating", "simplePlayersService" , "simpleGamesService", appContentDirectiveController],
+            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "AdaptedEloRating", "simplePlayersService", "simpleGamesService", appContentDirectiveController],
             link: appContentLink
         };
     });

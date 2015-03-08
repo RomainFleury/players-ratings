@@ -9,12 +9,13 @@
             </div>
         </md-toolbar>
         <md-content>
-            <div class="player" ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
-                 ng-repeat="player in appContent.players | orderBy:'-rating'" >
+            <div class="player"
+                 ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
+                 ng-repeat="player in appContent.players | orderBy:'-rating'">
                 <md-button layout="row" flex>
                     <span class="rating">{{player.rating | number:2}}</span>
                     <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
-                    <span class="avatar" ng-if="player.avatar"><img ng-src="{{player.avatar}}" /></span>
+                    <span class="avatar" ng-if="player.avatar"><img ng-src="{{player.avatar}}"/></span>
                     <md-tooltip>
                         {{player.gamesCount}} games played
                     </md-tooltip>
@@ -30,10 +31,12 @@
                     <h3>Générer des rencontres</h3>
                 </div>
                 <div layout="row">
-                <input ng-model="mockAmount" type="number" flex/>
-                <md-button class="md-accent md-raised" ng-class="{loadingcursor:generating}" ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>Générer</md-button>
-                <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer tout
-                </md-button>
+                    <input ng-model="mockAmount" type="number" flex/>
+                    <md-button class="md-accent md-raised" ng-class="{loadingcursor:generating}"
+                               ng-disabled="generating" ng-click="appContent.mockGames(mockAmount)" flex>Générer
+                    </md-button>
+                    <md-button type="button" class="md-warn" ng-click="appContent.resetAll()" flex>Effacer tout
+                    </md-button>
                 </div>
                 <div>&nbsp;</div>
             </div>
@@ -41,7 +44,9 @@
                 <form name="newGameForm" layout="column" ng-submit="appContent.save()">
                     <div layout="row">
                         <div class="playerA" layout="column" flex>
-                            <div class="formTitle">{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName : 'Participant A'}}</div>
+                            <div class="formTitle">{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName :
+                                'Participant A'}}
+                            </div>
                             <md-input-container>
                                 <label>Nom du participant A</label>
                                 <input ng-model="appContent.newGame.playerAName" type="text" required/>
@@ -52,7 +57,9 @@
                             </md-input-container>
                         </div>
                         <div class="playerB" layout="column" flex>
-                            <div class="formTitle">{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName : 'Participant B'}}</div>
+                            <div class="formTitle">{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName :
+                                'Participant B'}}
+                            </div>
                             <md-input-container>
                                 <label>Nom du participant B</label>
                                 <input ng-model="appContent.newGame.playerBName" type="text" required/>
@@ -63,22 +70,33 @@
                             </md-input-container>
                         </div>
                     </div>
+                    <md-input-container flex>
+                        <label>Date de la rencontre (optionnel)</label>
+                        <input type="date" ng-model="appContent.newGame.date"/>
+                    </md-input-container>
                     <md-button class="md-raised md-primary" flex>Ajouter ce résultat</md-button>
                 </form>
             </div>
             <div ng-if="true">
                 <md-content>
-                    <div class="game" ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : gamesShown : 0"
+                    <div class="game"
+                         ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : gamesShown : 0"
                          layout="column">
                         <div layout="row">
                             <span class="player-name left" ng-class="{'winner':game.playerAVictory}" flex>
-                                {{game.playerAName}}<md-tooltip>{{(game.playerARatingAfterGame - game.playerARatingBeforeGame) | number:0}}</md-tooltip></md-tooltip>&nbsp;:&nbsp;</span>
+                                {{game.playerAName}}<md-tooltip>{{(game.playerARatingAfterGame -
+                                game.playerARatingBeforeGame) | number:0}}
+                            </md-tooltip>
+                                </md-tooltip>&nbsp;:&nbsp;</span>
                             <span
-                                class="score" ng-class="{'winner':game.playerAVictory}">{{game.scoreA}}</span>
+                                    class="score" ng-class="{'winner':game.playerAVictory}">{{game.scoreA}}</span>
                             <span class="vs">&nbsp;.&nbsp;</span>
                             <span class="score" ng-class="{'winner':!game.playerAVictory}">{{game.scoreB}}</span>
                             <span class="player-name right" ng-class="{'winner':!game.playerAVictory}" flex>&nbsp;:&nbsp;
-                                {{game.playerBName}}<md-tooltip>{{(game.playerBRatingAfterGame - game.playerBRatingBeforeGame) | number:0}}</md-tooltip></md-tooltip></span>
+                                {{game.playerBName}}<md-tooltip>{{(game.playerBRatingAfterGame -
+                                    game.playerBRatingBeforeGame) | number:0}}
+                                </md-tooltip>
+                                </md-tooltip></span>
                         </div>
                         <div class="cotes" layout="row">
                             <span class="left" ng-class="{'winner-gamble':game.playerAExpectedVictory}" flex>{{game.playerAQuotation | number:2}}</span>
@@ -92,7 +110,9 @@
 								{{game | json}}
 						</pre>
                     </div>
-                    <div layout="row"><md-button class="md-accent" flex ng-click="showMore()">Montrer plus</md-button></div>
+                    <div layout="row">
+                        <md-button class="md-accent" flex ng-click="showMore()">Montrer plus</md-button>
+                    </div>
                 </md-content>
             </div>
         </md-content>

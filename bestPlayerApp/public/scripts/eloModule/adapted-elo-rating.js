@@ -3,7 +3,7 @@
  *
  * @author   Romain FLEURY <fleury@romain.in>
  */
-(function(){
+(function () {
     "use strict";
 
     angular.module("eloRating").provider("AdaptedEloRating", [function () {
@@ -11,12 +11,12 @@
         this.KFACTOR = 50;
         this.defaultRating = 1500;
         this.gapWeight = 10;
-        this.goalBonus = 1;
+        this.goalBonus = 1; // points gain for every goal scored
 
         this.$get = ["$http", "$log", "$q", function ($http, $log, $q) {
 
             var KFACTOR = this.KFACTOR;
-            var defaultRating = this.defaultRating ;
+            var defaultRating = this.defaultRating;
             var gapWeight = this.gapWeight;
             var goalBonus = this.goalBonus;
 
@@ -48,13 +48,12 @@
                                          gamesCountA, gamesCountB) {
 
                 // transforming scores en 1 ou 0 pour respecter l'algo de base:
-                var victoryA = (scoreA > scoreB)?1:0;
-                var victoryB = (scoreB > scoreA)?1:0;
-
+                var victoryA = (scoreA > scoreB) ? 1 : 0;
+                var victoryB = (scoreB > scoreA) ? 1 : 0;
 
                 // ajout de la prise en compte de l'écart entre les joueurs
                 var ratingGap = ratingA - ratingB;
-                var ratingGapPonderate = Math.abs(ratingGap / (KFACTOR /gapWeight));
+                var ratingGapPonderate = Math.abs(ratingGap / (KFACTOR / gapWeight));
 
                 // ajouter la prise en compte du nombre de matchs joués
                 var gamesGapA = gamesCountA - gamesCountB;
@@ -65,20 +64,29 @@
                 var scoreBonusA = scoreA * (goalBonus);
                 var scoreBonusB = scoreB * (goalBonus);
 
-                // on ajuste le nombre de points à gagner en fonction de l'écart entre les joueurs
-                var newRatingA = ratingA + ( (KFACTOR + ratingGapPonderate) * ( victoryA - expectedA ));//* (1/expectedA));
-                var newRatingB = ratingB + ( (KFACTOR + ratingGapPonderate) * ( victoryB - expectedB ));// * (1/expectedB));
-
-                newRatingA += scoreBonusA;
-                newRatingB += scoreBonusB;
-
+                var newRatingA, newRatingB;
+                if (victoryA > 0 || victoryB > 0) {
+                    // Not a draw
+                    // on ajuste le nombre de points à gagner en fonction de l'écart entre les joueurs
+                    newRatingA = ratingA + ( (KFACTOR + ratingGapPonderate) * ( victoryA - expectedA ));//* (1/expectedA));
+                    newRatingB = ratingB + ( (KFACTOR + ratingGapPonderate) * ( victoryB - expectedB ));// * (1/expectedB));
+                    newRatingA += scoreBonusA;
+                    newRatingB += scoreBonusB;
+                } else {
+                    // draw match
+                    // points gain is = to goalBonus mixed with chances of win, a very good player with a
+                    // draw will win less points.
+                    newRatingA = ratingA + (scoreBonusA*(1/expectedA));
+                    newRatingB = ratingB + (scoreBonusB*(1/expectedB));
+                }
 
                 return {"A": newRatingA, "B": newRatingB};
             }
 
             return {
                 "getNewRatings": getNewRatings,
-                "scoreIsBool": false
+                "scoreIsBool": false,
+                "drawAble": true
             };
         }];
     }]);

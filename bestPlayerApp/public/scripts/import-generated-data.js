@@ -9,7 +9,7 @@
         function controller($scope, $http, playerService, gamesService){
             self = this;
             var files = [
-                {"name":"D3 A 2014-2015","url":"/tests_results/france_d3_2014-15.json"}
+                {"name":"D3 A 2014-2015","url":"/tests_results/france_d3_2014-15-111d33e.json"}
             ];
 
             self.files = files;
