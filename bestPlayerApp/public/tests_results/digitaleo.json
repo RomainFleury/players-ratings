@@ -1,0 +1,5 @@
+{
+  "algorigthm": "adapted-elo-rating@111d33e",
+  "players":[{"id":1,"name":"David","rating":1475,"gamesCount":1,"avatar":""},{"id":2,"name":"Steven","rating":1527,"gamesCount":1,"avatar":""},{"id":3,"name":"Romain-David","rating":1475,"gamesCount":1,"avatar":""},{"id":4,"name":"Steven-Julien","rating":1527,"gamesCount":1,"avatar":""}],
+  "games":[{"date":"2015-03-09T12:11:51.104Z","playerAExpectedVictory":false,"playerAVictory":false,"playerAId":1,"playerAName":"David","scoreA":0,"playerARatingBeforeGame":1500,"playerARatingAfterGame":1475,"playerAQuotation":2,"playerBId":2,"playerBName":"Steven","scoreB":2,"playerBRatingBeforeGame":1500,"playerBRatingAfterGame":1527,"playerBQuotation":2,"id":1425904383228},{"date":"2015-03-09T12:11:51.104Z","playerAExpectedVictory":false,"playerAVictory":false,"playerAId":3,"playerAName":"Romain-David","scoreA":0,"playerARatingBeforeGame":1500,"playerARatingAfterGame":1475,"playerAQuotation":2,"playerBId":4,"playerBName":"Steven-Julien","scoreB":2,"playerBRatingBeforeGame":1500,"playerBRatingAfterGame":1527,"playerBQuotation":2,"id":1425906264687}]
+}

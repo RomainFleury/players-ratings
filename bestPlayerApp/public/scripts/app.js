@@ -1,5 +1,9 @@
 (function () {
     "use strict";
+
+    Parse.initialize("n3hvJCnz3q7egqqKq5QwPY0b64j5elVCV6WNdwZp", "Faixl3ZGd3cVgT205H2itrDIgyqmzyQZmxtrHKS1");
+
+
     angular.module("bestPlayerApp", [
         "ngTouch",
         "ngMaterial",
@@ -8,14 +12,29 @@
         "games"
     ]);
 
-    angular.module("bestPlayerApp").config(['$mdThemingProvider', function ($mdThemingProvider) {
-        $mdThemingProvider.theme('default')
-            .primaryPalette('blue-grey')
-            .accentPalette('brown')
-            .warnPalette('deep-orange');
+    angular.module("bestPlayerApp").config(["$mdThemingProvider", "simpleGamesServiceProvider", function ($mdThemingProvider, simpleGamesServiceProvider) {
+        $mdThemingProvider.theme("default")
+            .primaryPalette("blue-grey")
+            .accentPalette("brown")
+            .warnPalette("deep-orange");
+
+        var userName = "";
+        if(window.location.hash.match(/^#(.*)/).length > 1){
+            userName = window.location.hash.match(/^#(.*)/)[1];
+        }
+
+        simpleGamesServiceProvider.userName = userName;
+
     }]);
 
     angular.module("bestPlayerApp").controller("AppCtrl", ["$scope", "$mdSidenav", function ($scope, $mdSidenav) {
+
+        $scope.user = "default";
+        if(window.location.hash.match(/^#(.*)/).length > 1){
+            $scope.user = window.location.hash.match(/^#(.*)/)[1];
+        }
+
+
         $scope.toggleSidenav = function (menuId) {
             $mdSidenav(menuId).toggle();
         };
@@ -147,6 +166,7 @@
                 var playerAExpectedVictory = (newRatings.expectedResult.A > newRatings.expectedResult.B);
 
                 var game = {
+                    user:$scope.user,
                     date:prepareDate(),
                     playerAExpectedVictory: playerAExpectedVictory,
                     playerAVictory: (scoreA > scoreB),
@@ -174,7 +194,8 @@
                 $log.debug(gameLog);
 
                 // update games list
-                self.games = getGames();
+                //self.games = getGames();
+                getGames().then(function(games){self.games = games});
 
                 playerA.gamesCount += 1;
                 playerB.gamesCount += 1;
@@ -241,8 +262,11 @@
             };
 
             self.loadAll = function () {
-                self.games = getGames();
+                getGames().then(function(games){self.games = games});
+//                getPlayers().then(function(players){self.players = players});
+//                self.games = getGames();
                 self.players = getPlayers();
+
             };
 
             $scope.refreshAll = self.loadAll;
