@@ -151,7 +151,8 @@
                         "username": userName,
                         "name": playerName,
                         "avatar": "",
-                        "rating": basePoints
+                        "rating": basePoints,
+                        "gamesCount":0
                     }
                 ).then(
                     function (savedPlayer) {
