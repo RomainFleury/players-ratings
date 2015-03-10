@@ -6,7 +6,7 @@
 (function () {
     "use strict";
     angular.module("players", []);
-    angular.module("players").provider("simplePlayersService", [function () {
+    angular.module("players").provider("localPlayersService", [function () {
 
         this.basePoints = 1500;
 
@@ -23,46 +23,65 @@
             };
 
             function getPlayers() {
+                var deferred = $q.defer();
                 var stored = JSON.parse(localStorage.getItem("players"));
-                return stored ? stored : [];
+                deferred.resolve(stored ? stored : []);
+                return deferred.promise;
             }
 
 
             function savePlayers(players) {
+                var deferred = $q.defer();
                 localStorage.setItem("players", JSON.stringify(players));
+                deferred.resolve(players);
+                return deferred.promise;
             }
 
             function findPlayerByName(name) {
+                var deferred = $q.defer();
                 var players = getPlayers();
                 var playerIndex;
+                var found = false;
                 for (playerIndex in players) {
                     if (players[playerIndex] && players[playerIndex].name) {
                         if (players[playerIndex].name.indexOf(name) === 0 && players[playerIndex].name === name) {
                             // player found, returning it.
-                            return players[playerIndex];
+                            found = true;
+                            deferred.resolve(players[playerIndex]);
                         }
                     }
                 }
+                if(!found){
+                    deferred.reject();
+                }
                 // player not found return false
-                return false;
+                return deferred.promise;
             }
 
             function findPlayerById(id) {
+                var deferred = $q.defer();
                 var players = getPlayers();
                 var playerIndex;
+                var found = false;
                 for (playerIndex in players) {
                     if (players[playerIndex] && players[playerIndex].id) {
                         if (players[playerIndex].id === id) {
                             // player found, returning it.
-                            return players[playerIndex];
+                            found = true;
+                            deferred.resolve(players[playerIndex]);
                         }
                     }
                 }
-                // player not found, return false
-                return false;
+                if(!found){
+                    deferred.reject();
+                }
+                // player not found return false
+                return deferred.promise;
             }
 
             function updatePlayer(player) {
+                var deferred = $q.defer();
+
                 var players = getPlayers();
                 var changed = false;
                 // udpate players
@@ -79,11 +98,15 @@
                 }
                 if (changed) {
                     // save updated players
-                    savePlayers(players);
+                    savePlayers(players).then(function(players){
+                        deferred.resolve(players);
+                    });
                 }
+                return deferred.promise;
             }
 
             function addPlayer(playerName) {
+                var deferred = $q.defer();
                 var players = getPlayers();
                 var playersCount = players.length;
                 var player = angular.copy(playerFormat);
@@ -94,16 +117,12 @@
 
                 // save players if player list changed
                 if (playersCount < players.length) {
-                    savePlayers(players);
-                    $log.info("player added");
+                    savePlayers(players).then(function(players){
+                        deferred.resolve(player);
+                        $log.info("player added");
+                    });
                 }
-                return player;
-            }
-
-            function removePlayer(player) {
-                if (player.id) {
-                    //TODO
-                }
+                return deferred.promise;
             }
 
             return {
@@ -111,8 +130,6 @@
                 "findByName": findPlayerByName,
                 "findById": findPlayerById,
                 "list": getPlayers,
-                "save": savePlayers,
-                "remove": removePlayer,
                 "add": addPlayer,
                 "update": updatePlayer
             };

@@ -35,7 +35,7 @@
             templateUrl: '/views/import-generated-data.html',
             replace: true,
             transclude: true,
-            controller: ["$scope","$http", "simplePlayersService", "simpleGamesService", controller],
+            controller: ["$scope","$http", "localPlayersService", "localGamesService", controller],
             controllerAs: 'importFiles',
             link:link
         };

@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    Parse.initialize("n3hvJCnz3q7egqqKq5QwPY0b64j5elVCV6WNdwZp", "Faixl3ZGd3cVgT205H2itrDIgyqmzyQZmxtrHKS1");
+    Parse.initialize("");
 
 
     angular.module("bestPlayerApp", [
@@ -12,26 +12,31 @@
         "games"
     ]);
 
-    angular.module("bestPlayerApp").config(["$mdThemingProvider", "simpleGamesServiceProvider", function ($mdThemingProvider, simpleGamesServiceProvider) {
+    angular.module("bestPlayerApp").config(["$mdThemingProvider", "parseGamesServiceProvider", "parsePlayersServiceProvider", function ($mdThemingProvider, gamesServiceProvider, playersServiceProvider) {
         $mdThemingProvider.theme("default")
             .primaryPalette("blue-grey")
             .accentPalette("brown")
             .warnPalette("deep-orange");
 
         var userName = "";
-        if(window.location.hash.match(/^#(.*)/).length > 1){
+        if (window.location.hash.match(/^#(.*)/) && window.location.hash.match(/^#(.*)/).length > 1) {
             userName = window.location.hash.match(/^#(.*)/)[1];
+        } else {
+            userName = "default";
         }
 
-        simpleGamesServiceProvider.userName = userName;
+        gamesServiceProvider.userName = userName;
+        playersServiceProvider.userName = userName;
 
     }]);
 
     angular.module("bestPlayerApp").controller("AppCtrl", ["$scope", "$mdSidenav", function ($scope, $mdSidenav) {
 
         $scope.user = "default";
-        if(window.location.hash.match(/^#(.*)/).length > 1){
+        if (window.location.hash.match(/^#(.*)/) && window.location.hash.match(/^#(.*)/).length > 1) {
             $scope.user = window.location.hash.match(/^#(.*)/)[1];
+        } else {
+            $scope.user = "default";
         }
 
 
@@ -42,24 +47,28 @@
 
     angular.module("bestPlayerApp").directive("appContent", function () {
 
-        var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, ratingService, playerService, gameService) {
+        var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, $q, ratingService, playerService, gameService) {
             var self = this;
 
             self.games = [];
             self.players = [];
             self.loading = true;
-            self.newGame = {date:new Date()};
+            self.newGame = {date: new Date()};
 
             self.toggleTab = function () {
                 $mdSidenav("left").toggle();
             };
 
             function getGames() {
-                return gameService.list();
+                gameService.list().then(function(games){
+                    self.games = games;
+                });
             }
 
             function getPlayers() {
-                return playerService.list();
+                playerService.list().then(function(players){
+                    self.players = players;
+                });
             }
 
             function gameIsValid() {
@@ -89,26 +98,49 @@
                 return valid;
             }
 
-            function preparePlayers() {
+            function preparePlayer(playerName) {
+                var def = $q.defer();
+
+                playerService.findByName(playerName).then(function (player) {
+                    def.resolve(player);
+                }, function () {
+                    playerService.add(playerName).then(function (player) {
+                        def.resolve(player);
+                    });
+                });
+                return def.promise;
+            }
+
+            function preparePlayers(playerAName, playerBName) {
+                var preparePromise = $q.defer();
                 var playerA;
                 var playerB;
 
-                var playerAName = self.newGame.playerAName.trim();
-                var playerBName = self.newGame.playerBName.trim();
+                var paPromise = $q.defer();
+                var pbPromise = $q.defer();
 
-                // search players in players
-                playerA = playerService.findByName(playerAName);
-                playerB = playerService.findByName(playerBName);
+                // prepare player A
+                preparePlayer(playerAName)
+                    .then(function (playerAF) {
+                        playerA = playerAF;
+                        paPromise.resolve();
+                    });
 
-                // create players if required
-                if (!playerA) {
-                    playerA = playerService.add(playerAName);
-                }
-                if (!playerB) {
-                    playerB = playerService.add(playerBName);
-                }
+                paPromise.promise.then(function(){
+                    // then prepare playerB
+                    preparePlayer(playerBName)
+                        .then(function (playerBF) {
+                            playerB = playerBF;
+                            pbPromise.resolve();
 
-                return {"A": playerA, "B": playerB};
+                        });
+                });
+
+                pbPromise.promise.then(function(){
+                    preparePromise.resolve({"A": playerA, "B": playerB});
+                });
+
+                return preparePromise.promise;
             }
 
             function scoresForRating(scoreA, scoreB) {
@@ -126,20 +158,11 @@
                 return {"A": scoreAForRating, "B": scoreBForRating};
             }
 
-            function prepareDate(){
+            function prepareDate() {
                 return self.newGame.date;
             }
 
-            self.save = function () {
-
-                if (!gameIsValid()) {
-                    return false;
-                }
-
-                var playersPrepared = preparePlayers();
-                var playerA = playersPrepared.A;
-                var playerB = playersPrepared.B;
-
+            function prepareGameData(playerA, playerB){
                 var ratingA = parseInt(playerA.rating);
                 var ratingB = parseInt(playerB.rating);
 
@@ -166,8 +189,8 @@
                 var playerAExpectedVictory = (newRatings.expectedResult.A > newRatings.expectedResult.B);
 
                 var game = {
-                    user:$scope.user,
-                    date:prepareDate(),
+                    user: $scope.user,
+                    date: prepareDate(),
                     playerAExpectedVictory: playerAExpectedVictory,
                     playerAVictory: (scoreA > scoreB),
 
@@ -186,36 +209,63 @@
                     playerBQuotation: Math.round((1 / newRatings.expectedResult.B) * 100) / 100
                 };
 
-                // store game :
-                game = gameService.add(game);
-                var gameLog = "Game [" + game.id + "], " + playerA.name + " [" + ratingA + "=>" + playerA.rating +
-                    "], " + playerB.name + " [" + ratingB + "=>" + playerB.rating + "]";
-
-                $log.debug(gameLog);
-
-                // update games list
-                //self.games = getGames();
-                getGames().then(function(games){self.games = games});
-
                 playerA.gamesCount += 1;
                 playerB.gamesCount += 1;
 
-                playerService.update(playerA);
-                playerService.update(playerB);
-                // udpate players list
-                self.players = getPlayers();
+                // update players
+                playerService.update(playerA).then(function(){
+                    playerService.update(playerB).then(function(){
+                        // udpate players list
+                        getPlayers();
+                    });
+                });
 
-                // reset :
-                self.newGame = {
-                    date:game.date
-                };
-                //self.setFakeValues();
+
+                return game;
+            }
+
+            self.save = function () {
+
+                if (!gameIsValid()) {
+                    return false;
+                }
+
+                var playersPrepared;
+                preparePlayers(self.newGame.playerAName.trim(), self.newGame.playerBName.trim()).then(function(players){
+                    playersPrepared = players;
+
+                    var playerA = playersPrepared.A;
+                    var playerB = playersPrepared.B;
+
+                    var game = prepareGameData(playerA, playerB);
+
+                    // store game :
+                    gameService.add(game).then(function (newGame) {
+                        game = newGame;
+                        var gameLog = "Game [" + game.id + "], " + game.playerAName + " [" + game.playerARatingBeforeGame + "=>" + game.playerARatingAfterGame +
+                            "], " + game.playerBName + " [" + game.playerBRatingBeforeGame + "=>" + game.playerARatingAfterGame + "]";
+
+                        $log.debug(gameLog);
+
+                        // update games list
+                        //self.games = getGames();
+                        getGames()
+                    });
+
+                    // reset :
+                    self.newGame = {
+                        date: game.date
+                    };
+
+
+                });
+
             };
 
             self.setFakeValues = function () {
                 var sA = Math.round((Math.random() * 10) / 2);
                 var sB = Math.round((Math.random() * 10) / 2);
-                if (sA === sB && ratingService.scoreIsBool){
+                if (sA === sB && ratingService.scoreIsBool) {
                     sA += 1;
                 }
 
@@ -262,11 +312,10 @@
             };
 
             self.loadAll = function () {
-                getGames().then(function(games){self.games = games});
+                getGames();
+                getPlayers();
 //                getPlayers().then(function(players){self.players = players});
 //                self.games = getGames();
-                self.players = getPlayers();
-
             };
 
             $scope.refreshAll = self.loadAll;
@@ -327,7 +376,7 @@
             templateUrl: "views/app-content.html",
             replace: true,
             controllerAs: "appContent",
-            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "AdaptedEloRating", "simplePlayersService", "simpleGamesService", appContentDirectiveController],
+            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "parsePlayersService", "parseGamesService", appContentDirectiveController],
             link: appContentLink
         };
     });
