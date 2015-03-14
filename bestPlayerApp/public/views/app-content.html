@@ -8,10 +8,24 @@
                 </h3>
             </div>
         </md-toolbar>
-        <md-content>
+        <md-content flex>
             <div class="player"
                  ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
-                 ng-repeat="player in appContent.players | orderBy:'-rating'">
+                 ng-repeat="player in appContent.players | filter :{name: '!-'} | orderBy:'-rating'">
+                <md-button layout="row" flex>
+                    <span class="rating">{{player.rating | number:2}}</span>
+                    <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
+                    <span class="avatar" ng-if="player.avatar"><img ng-src="{{player.avatar}}"/></span>
+                    <md-tooltip>
+                        {{player.gamesCount}} games played
+                    </md-tooltip>
+                </md-button>
+            </div>
+        </md-content>
+        <md-content flex>
+            <div class="player"
+                 ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
+                 ng-repeat="player in appContent.players | filter :{name: '-'} |  orderBy:'-rating'">
                 <md-button layout="row" flex>
                     <span class="rating">{{player.rating | number:2}}</span>
                     <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
@@ -40,7 +54,7 @@
                 </div>
                 <div>&nbsp;</div>
             </div>
-            <div ng-if="!debug">
+            <div ng-if="!debug" ng-hide="user === 'digitaleo'">
                 <form name="newGameForm" layout="column" ng-submit="appContent.save()">
                     <div layout="row">
                         <div class="playerA" layout="column" flex>

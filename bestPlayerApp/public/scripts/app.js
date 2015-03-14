@@ -71,6 +71,10 @@
                 });
             }
 
+            /**
+             * Checks if the game form is valid.
+             * @returns {boolean}
+             */
             function gameIsValid() {
                 var valid = true;
                 if (self.newGame.playerAName.length === 0) {
@@ -98,6 +102,12 @@
                 return valid;
             }
 
+            /**
+             * Get a player from his name, or creates it.
+             *
+             * @param playerName
+             * @returns {*}
+             */
             function preparePlayer(playerName) {
                 var def = $q.defer();
 
@@ -111,6 +121,13 @@
                 return def.promise;
             }
 
+            /**
+             * get players from names
+             *
+             * @param playerAName
+             * @param playerBName
+             * @returns {*}
+             */
             function preparePlayers(playerAName, playerBName) {
                 var preparePromise = $q.defer();
                 var playerA;
@@ -143,6 +160,12 @@
                 return preparePromise.promise;
             }
 
+            /**
+             * returns score depending on rating service parameters
+             * @param scoreA
+             * @param scoreB
+             * @returns {{A: Number, B: Number}}
+             */
             function scoresForRating(scoreA, scoreB) {
                 scoreA = parseInt(scoreA);
                 scoreB = parseInt(scoreB);
@@ -162,6 +185,13 @@
                 return self.newGame.date;
             }
 
+            /**
+             * prepares game object before saving, updates players
+             *
+             * @param playerA
+             * @param playerB
+             * @returns {{user: string, date: *, playerAExpectedVictory: boolean, playerAVictory: boolean, playerAId: (playerA.id|*), playerAName: (playerA.name|*), scoreA: Number, playerARatingBeforeGame: Number, playerARatingAfterGame: (playerA.rating|*), playerAQuotation: number, playerBId: (playerB.id|*), playerBName: (playerB.name|*), scoreB: Number, playerBRatingBeforeGame: Number, playerBRatingAfterGame: (playerB.rating|*), playerBQuotation: number}}
+             */
             function prepareGameData(playerA, playerB){
                 var ratingA = parseInt(playerA.rating);
                 var ratingB = parseInt(playerB.rating);
@@ -224,6 +254,10 @@
                 return game;
             }
 
+            /**
+             * saves game form, updates players rankings, updates view,
+             * @returns {boolean}
+             */
             self.save = function () {
 
                 if (!gameIsValid()) {
@@ -248,7 +282,6 @@
                         $log.debug(gameLog);
 
                         // update games list
-                        //self.games = getGames();
                         getGames()
                     });
 
@@ -263,6 +296,7 @@
             };
 
             self.setFakeValues = function () {
+                /*
                 var sA = Math.round((Math.random() * 10) / 2);
                 var sB = Math.round((Math.random() * 10) / 2);
                 if (sA === sB && ratingService.scoreIsBool) {
@@ -301,7 +335,7 @@
                     "scoreA": sA,
                     "scoreB": sB,
                     "playerBName": nB
-                };
+                };*/
             };
 
             self.resetAll = function () {
@@ -314,13 +348,13 @@
             self.loadAll = function () {
                 getGames();
                 getPlayers();
-//                getPlayers().then(function(players){self.players = players});
-//                self.games = getGames();
             };
 
             $scope.refreshAll = self.loadAll;
 
+
             self.mockGames = function (count) {
+                /*
                 $scope.generating = true;
                 var timer = "Mock " + count + " games";
                 var start;
@@ -354,6 +388,8 @@
                 $scope.generating = false;
 
                 //$log.info("games : " + self.games.length);
+
+                 */
             };
         };
 
