@@ -282,7 +282,7 @@
                         $log.debug(gameLog);
 
                         // update games list
-                        getGames()
+                        getGames();
                     });
 
                     // reset :
@@ -314,7 +314,7 @@
                     "A": "Brest",
                     "B": "Bordeaux",
                     "C": "La Roche sur Yon",
-                    "D": "Orléans",
+                    "D": "Orleans",
                     "E": "Tours",
                     "F": "Poitiers"
                 };
@@ -354,6 +354,7 @@
 
 
             self.mockGames = function (count) {
+                $log.info(count);
                 /*
                 $scope.generating = true;
                 var timer = "Mock " + count + " games";
