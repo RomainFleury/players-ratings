@@ -1,6 +1,6 @@
 <div layout="row" flex>
     <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
-                md-is-locked-open="$media('gt-sm')">
+                md-is-locked-open="$mdMedia('gt-sm')">
         <md-toolbar layout="row">
             <div class="md-toolbar-tools">
                 <h3>
@@ -11,7 +11,7 @@
         <md-content flex>
             <div class="player"
                  ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
-                 ng-repeat="player in appContent.players | filter :{name: '!-'} | orderBy:'-rating'">
+                 ng-repeat="player in appContent.players | filter :{name: '!/'} | orderBy:'-rating'">
                 <md-button layout="row" flex>
                     <span class="rating">{{player.rating | number:2}}</span>
                     <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
@@ -25,7 +25,7 @@
         <md-content flex>
             <div class="player"
                  ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
-                 ng-repeat="player in appContent.players | filter :{name: '-'} |  orderBy:'-rating'">
+                 ng-repeat="player in appContent.players | filter :{name: '/'} |  orderBy:'-rating'">
                 <md-button layout="row" flex>
                     <span class="rating">{{player.rating | number:2}}</span>
                     <span class="name" flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</span>
@@ -54,32 +54,51 @@
                 </div>
                 <div>&nbsp;</div>
             </div>
-            <div ng-if="!debug" ng-hide="user === 'digitaleo'">
+
+            <div class="newGameEditor">
+
                 <form name="newGameForm" layout="column" ng-submit="appContent.save()">
+                    <md-button ng-show="appContent.playerSearched.length >= 4" ng-click="appContent.createPlayer(appContent.playerSearched)">
+                        Créer le joueur "{{appContent.playerSearched}}"
+                    </md-button>
                     <div layout="row">
                         <div class="playerA" layout="column" flex>
                             <div class="formTitle">{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName :
-                                'Participant A'}}
+                                'Equipe A'}}
                             </div>
+
+                            <md-contact-chips
+                                    ng-model="appContent.newGame.playersA"
+                                    md-contacts="appContent.searchPlayer($query)"
+                                    md-contact-name="name"
+                                    md-contact-image="avatar"
+                                    md-contact-email="points"
+                                    md-require-match
+                                    filter-selected="false"
+                                    placeholder="Joueurs équipe A">
+                            </md-contact-chips>
+
                             <md-input-container>
-                                <label>Nom du participant A</label>
-                                <input ng-model="appContent.newGame.playerAName" type="text" required/>
-                            </md-input-container>
-                            <md-input-container>
-                                <label>Score participant A</label>
+                                <label>Score équipe A</label>
                                 <input ng-model="appContent.newGame.scoreA" type="number" required/>
                             </md-input-container>
                         </div>
                         <div class="playerB" layout="column" flex>
                             <div class="formTitle">{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName :
-                                'Participant B'}}
+                                'Équipe B'}}
                             </div>
+                            <md-contact-chips
+                                    ng-model="appContent.newGame.playersB"
+                                    md-contacts="appContent.searchPlayer($query)"
+                                    md-contact-name="name"
+                                    md-contact-image="avatar"
+                                    md-contact-email="points"
+                                    md-require-match
+                                    filter-selected="false"
+                                    placeholder="Joueurs équipe B">
+                            </md-contact-chips>
                             <md-input-container>
-                                <label>Nom du participant B</label>
-                                <input ng-model="appContent.newGame.playerBName" type="text" required/>
-                            </md-input-container>
-                            <md-input-container>
-                                <label>Score participant B</label>
+                                <label>Score équipe B</label>
                                 <input ng-model="appContent.newGame.scoreB" type="number" required/>
                             </md-input-container>
                         </div>
@@ -91,7 +110,9 @@
                     <md-button class="md-raised md-primary" flex>Ajouter ce résultat</md-button>
                 </form>
             </div>
-            <div ng-if="true">
+
+
+            <div ng-if="true" class="list_of_games">
                 <md-content>
                     <div class="game"
                          ng-repeat="game in appContent.games | orderBy:'id':true | limitTo : gamesShown : 0"

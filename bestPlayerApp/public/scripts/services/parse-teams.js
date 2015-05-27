@@ -1,11 +1,11 @@
 /**
- * players.js
+ * teams.js
  *
  * @author   Romain FLEURY <fleury@romain.in>
  */
 (function () {
     "use strict";
-    angular.module("players").provider("parsePlayersService", [function () {
+    angular.module("teams").provider("parseTeamsService", [function () {
 
         this.userName = "";
         this.basePoints = 1500;
@@ -14,43 +14,45 @@
 
             var userName = this.userName;
             var basePoints = this.basePoints;
-            var defaultAvatar = "/images/default-avatar.jpg";
+            var defaultAvatar = "/images/default-team-avatar.jpg";
             // PARSE
-            var parsePlayer = Parse.Object.extend("player");
+            var parseTeam = Parse.Object.extend("team");
 
-            var playerFormat = {
+            var teamFormat = {
                 "id": 0,
                 "name": "",
                 "rating": basePoints,
                 "gamesCount": 0,
                 "avatar": defaultAvatar,
-                "username": userName
+                "username": userName,
+                "playersIds":[]
             };
 
-            function preparePlayerToList(player) {
-                var tmp = angular.copy(playerFormat);
-                tmp.id = player.id;
-                tmp.username = player.attributes.username;
-                tmp.name = player.attributes.name;
-                tmp.rating = player.attributes.rating;
-                tmp.avatar = player.attributes.avatar;
-                tmp.gamesCount = player.attributes.gamesCount;
+            function prepareTeamToList(team) {
+                var tmp = angular.copy(teamFormat);
+                tmp.id = team.id;
+                tmp.username = team.attributes.username;
+                tmp.name = team.attributes.name;
+                tmp.rating = team.attributes.rating;
+                tmp.avatar = team.attributes.avatar;
+                tmp.gamesCount = team.attributes.gamesCount;
+                tmp.playersIds = team.attributes.playersIds;
                 return tmp;
             }
 
-            function getPlayers() {
+            function getTeams() {
                 var deferred = $q.defer();
-                var query = new Parse.Query(parsePlayer);
+                var query = new Parse.Query(parseTeam);
                 query.equalTo("username", userName);
                 query.find({
                     success: function (results) {
-                        var players = [];
+                        var teams = [];
                         if (results.length > 0) {
                             for (var i = 0; i < results.length; i++) {
-                                players[i] = preparePlayerToList(results[i]);
+                                teams[i] = prepareTeamToList(results[i]);
                             }
                         }
-                        deferred.resolve(players);
+                        deferred.resolve(teams);
                     },
                     error: function (error) {
                         //alert("Error: " + error.code + " " + error.message);
@@ -61,25 +63,26 @@
             }
 
 
-            function savePlayer(player) {
-                var newPlayer = new parsePlayer;
+            function saveTeam(team) {
+                var newTeam = new parseTeam;
                 //var ACLs = User.acl();
-                newPlayer.save({
+                newTeam.save({
                         "username": userName,
-                        "name": player.name,
-                        "avatar": player.avatar,
-                        "rating": player.rating
+                        "name": team.name,
+                        "avatar": team.avatar,
+                        "rating": team.rating,
+                        "playersIds":team.playersIds
                     }
                 ).then(
-                    function (savedPlayer) {
-                        deferred.resolve(preparePlayerToList(savedPlayer));
+                    function (savedTeam) {
+                        deferred.resolve(prepareTeamToList(savedTeam));
                     }
                 );
             }
 
-            function findPlayerByName(playerName) {
+            function findTeamByName(teamName) {
                 var deferred = $q.defer();
-                var qb = new Parse.Query(parsePlayer);
+                var qb = new Parse.Query(parseTeam);
                 var usernameQuery = qb.matches("username", userName);
                 var query = Parse.Query.or(usernameQuery);
                 query.limit(100);
@@ -87,9 +90,9 @@
                     success: function (results) {
                         if (results.length > 0) {
                             for (var i = 0; i < results.length; i++) {
-                                if (results[i].attributes.name === playerName) {
-                                    var player = preparePlayerToList(results[i]);
-                                    deferred.resolve(player);
+                                if (results[i].attributes.name === teamName) {
+                                    var team = prepareTeamToList(results[i]);
+                                    deferred.resolve(team);
                                 }
                             }
                             deferred.reject();
@@ -105,13 +108,13 @@
                 return deferred.promise;
             }
 
-            function findPlayerById(id) {
+            function findTeamById(id) {
                 var deferred = $q.defer();
-                var query = new Parse.Query(parsePlayer);
+                var query = new Parse.Query(parseTeam);
                 query.get(id, {
                     success: function (result) {
-                        var player = preparePlayerToList(result);
-                        deferred.resolve(player);
+                        var team = prepareTeamToList(result);
+                        deferred.resolve(team);
                     },
                     error: function (error) {
                         //alert("Error: " + error.code + " " + error.message);
@@ -121,16 +124,16 @@
                 return deferred.promise;
             }
 
-            function updatePlayer(player) {
+            function updateTeam(team) {
                 var deferred = $q.defer();
-                var query = new Parse.Query(parsePlayer);
-                query.get(player.id, {
-                    success: function (savedPlayer) {
-                        savedPlayer.save({
-                            "rating":player.rating,
-                            "gamesCount":player.gamesCount
+                var query = new Parse.Query(parseTeam);
+                query.get(team.id, {
+                    success: function (savedTeam) {
+                        savedTeam.save({
+                            "rating":team.rating,
+                            "gamesCount":team.gamesCount
                         }).then(function () {
-                            deferred.resolve(preparePlayerToList(savedPlayer))
+                            deferred.resolve(prepareTeamToList(savedTeam))
                         });
                     },
                     error: function (error) {
@@ -141,42 +144,43 @@
                 return deferred.promise;
             }
 
-            function addPlayer(playerName) {
+            function addTeam(teamName, playersIds) {
                 var deferred = $q.defer();
-                var player = angular.copy(playerFormat);
-                player.name = playerName;
+                var team = angular.copy(teamFormat);
+                team.name = teamName;
 
-                var newPlayer = new parsePlayer;
+                var newTeam = new parseTeam;
                 //var ACLs = User.acl();
-                newPlayer.save({
+                newTeam.save({
                         "username": userName,
-                        "name": playerName,
+                        "name": teamName,
                         "avatar": defaultAvatar,
                         "rating": basePoints,
-                        "gamesCount":0
+                        "gamesCount":0,
+                        "playersIds":playersIds
                     }
                 ).then(
-                    function (savedPlayer) {
-                        deferred.resolve(preparePlayerToList(savedPlayer));
+                    function (savedTeam) {
+                        deferred.resolve(prepareTeamToList(savedTeam));
                     }
                 );
                 return deferred.promise;
             }
 
-            function removePlayer(player) {
-                if (player.id) {
+            function removeTeam(team) {
+                if (team.id) {
                     //TODO
                 }
             }
 
             return {
-                "format": angular.copy(playerFormat),
-                "findByName": findPlayerByName,
-                "findById": findPlayerById,
-                "list": getPlayers,
-                "remove": removePlayer,
-                "add": addPlayer,
-                "update": updatePlayer
+                "format": angular.copy(teamFormat),
+                "findByName": findTeamByName,
+                "findById": findTeamById,
+                "list": getTeams,
+                "remove": removeTeam,
+                "add": addTeam,
+                "update": updateTeam
             };
         }];
     }]);

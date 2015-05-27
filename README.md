@@ -1,10 +1,14 @@
 # players-ratings
+
 Web application build to store games results, calculate players rank, create championships...
 
 
 # Use
 
-Simply install http-server npm package :
+Simply serve public folder within your favorite web server.
+
+For example, install http-server npm package :
+
     sudo npm install -g http-server
 
 Then serve public folder :

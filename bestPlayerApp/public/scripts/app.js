@@ -1,7 +1,7 @@
 (function () {
     "use strict";
 
-    Parse.initialize("");
+    Parse.initialize("n3hvJCnz3q7egqqKq5QwPY0b64j5elVCV6WNdwZp", "Faixl3ZGd3cVgT205H2itrDIgyqmzyQZmxtrHKS1");
 
 
     angular.module("bestPlayerApp", [
@@ -9,10 +9,11 @@
         "ngMaterial",
         "eloRating",
         "players",
-        "games"
+        "games",
+        "teams"
     ]);
 
-    angular.module("bestPlayerApp").config(["$mdThemingProvider", "parseGamesServiceProvider", "parsePlayersServiceProvider", function ($mdThemingProvider, gamesServiceProvider, playersServiceProvider) {
+    angular.module("bestPlayerApp").config(["$mdThemingProvider", "parseTeamgamesServiceProvider", "parsePlayersServiceProvider", "parseTeamsServiceProvider", function ($mdThemingProvider, gamesServiceProvider, playersServiceProvider, parseTeamsServiceProvider) {
         $mdThemingProvider.theme("default")
             .primaryPalette("blue-grey")
             .accentPalette("brown")
@@ -27,6 +28,7 @@
 
         gamesServiceProvider.userName = userName;
         playersServiceProvider.userName = userName;
+        parseTeamsServiceProvider.userName = userName;
 
     }]);
 
@@ -47,27 +49,40 @@
 
     angular.module("bestPlayerApp").directive("appContent", function () {
 
-        var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, $q, ratingService, playerService, gameService) {
+        var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, $q, ratingService, playerService, gameService, teamService, $filter) {
             var self = this;
 
             self.games = [];
             self.players = [];
+            self.teams = [];
             self.loading = true;
-            self.newGame = {date: new Date()};
+            self.newGame = {
+                date: new Date(),
+                playersA:[],
+                playersB:[],
+                scoreA:null,
+                scoreB:null
+            };
 
             self.toggleTab = function () {
                 $mdSidenav("left").toggle();
             };
 
             function getGames() {
-                gameService.list().then(function(games){
+                gameService.list().then(function (games) {
                     self.games = games;
                 });
             }
 
             function getPlayers() {
-                playerService.list().then(function(players){
+                playerService.list().then(function (players) {
                     self.players = players;
+                });
+            }
+
+            function getTeams() {
+                teamService.list().then(function (teams) {
+                    self.teams = teams;
                 });
             }
 
@@ -77,25 +92,25 @@
              */
             function gameIsValid() {
                 var valid = true;
-                if (self.newGame.playerAName.length === 0) {
-                    $log.error("player A name empty");
+                if (self.newGame.playersA.length === 0) {
+                    $log.error("not enough players in team A");
                     valid = false;
                 }
-                if (self.newGame.playerBName.length === 0) {
-                    $log.error("player B name empty");
+                if (self.newGame.playersB.length === 0) {
+                    $log.error("not enough players in team B");
                     valid = false;
                 }
                 if (typeof(parseInt(self.newGame.scoreA)) !== "number") {
-                    $log.error("player A score not a number");
+                    $log.error("team A score not a number");
                     valid = false;
                 }
                 if (typeof(parseInt(self.newGame.scoreB)) !== "number") {
-                    $log.error("player B score not a number");
+                    $log.error("team B score not a number");
                     valid = false;
                 }
                 if (!ratingService.drawAble) {
                     if (parseInt(self.newGame.scoreA) === parseInt(self.newGame.scoreB)) {
-                        $log.error("player A score === player B score");
+                        $log.error("team A score === team B score");
                         valid = false;
                     }
                 }
@@ -115,6 +130,46 @@
                     def.resolve(player);
                 }, function () {
                     playerService.add(playerName).then(function (player) {
+                        def.resolve(player);
+                    });
+                });
+                return def.promise;
+            }
+
+            /**
+             *
+             * @returns {string}
+             */
+            function randomTeamName(){
+                var names = [
+                    "toffee","croissant", "oat","cake", "gummies", "ice", "cream", "danish",
+                    "jellybeans", "Macaroon", "candy", "wafer", "sesame",
+                    "snaps", "pie", "danish", "chupa chups", "chocolate bar", "cotton",
+                    "candy", "sweet", "cheesecake", "ice", "cream", "jelly-o","jujubes",
+                    "brownie", "soufflé", "carrot cake", "toffee", "ice cream", "icing", "bear",
+                    "claw", "cookie", "topping", "claw", "pastry", "lollipop", "topping","ham","fine","ugly","fast",
+                    "jawbone","bag","sky","team","soldiers"
+                ];
+
+                var a = Math.floor(Math.random() * names.length);
+                var b = Math.floor(Math.random() * names.length);
+
+                return names[a].charAt(0).toUpperCase() + names[a].substr(1) +' '+ names[b];
+            }
+
+            /**
+             * Get a team from its players, or creates it.
+             *
+             * @param players
+             * @returns {*}
+             */
+            function prepareTeam(players){
+                var def = $q.defer();
+
+                teamService.findByPlayers(players).then(function (team) {
+                    def.resolve(team);
+                }, function () {
+                    teamService.add(randomTeamName(), players).then(function (player) {
                         def.resolve(player);
                     });
                 });
@@ -143,7 +198,7 @@
                         paPromise.resolve();
                     });
 
-                paPromise.promise.then(function(){
+                paPromise.promise.then(function () {
                     // then prepare playerB
                     preparePlayer(playerBName)
                         .then(function (playerBF) {
@@ -153,12 +208,55 @@
                         });
                 });
 
-                pbPromise.promise.then(function(){
+                pbPromise.promise.then(function () {
                     preparePromise.resolve({"A": playerA, "B": playerB});
                 });
 
                 return preparePromise.promise;
             }
+
+
+            /**
+             * get teams from names
+             *
+             * @param playersA
+             * @param playersB
+             * @returns {*}
+             */
+            function prepareTeams(playersA, playersB) {
+                var preparePromise = $q.defer();
+                var teamA;
+                var teamB;
+
+                var paPromise = $q.defer();
+                var pbPromise = $q.defer();
+
+                // prepare player A
+                prepareTeam(playersA)
+                    .then(function (teamAF) {
+                        teamA = teamAF;
+                        paPromise.resolve();
+                    });
+
+                paPromise.promise.then(function () {
+                    // then prepare playerB
+                    prepareTeam(playersB)
+                        .then(function (teamBF) {
+                            teamB = teamBF;
+                            pbPromise.resolve();
+
+                        });
+                });
+
+                pbPromise.promise.then(function () {
+                    preparePromise.resolve({"A": teamA, "B": teamB});
+                });
+
+                return preparePromise.promise;
+            }
+
+
+
 
             /**
              * returns score depending on rating service parameters
@@ -192,7 +290,7 @@
              * @param playerB
              * @returns {{user: string, date: *, playerAExpectedVictory: boolean, playerAVictory: boolean, playerAId: (playerA.id|*), playerAName: (playerA.name|*), scoreA: Number, playerARatingBeforeGame: Number, playerARatingAfterGame: (playerA.rating|*), playerAQuotation: number, playerBId: (playerB.id|*), playerBName: (playerB.name|*), scoreB: Number, playerBRatingBeforeGame: Number, playerBRatingAfterGame: (playerB.rating|*), playerBQuotation: number}}
              */
-            function prepareGameData(playerA, playerB){
+            function prepareGameData(playerA, playerB) {
                 var ratingA = parseInt(playerA.rating);
                 var ratingB = parseInt(playerB.rating);
 
@@ -243,15 +341,18 @@
                 playerB.gamesCount += 1;
 
                 // update players
-                playerService.update(playerA).then(function(){
-                    playerService.update(playerB).then(function(){
+                playerService.update(playerA).then(function () {
+                    playerService.update(playerB).then(function () {
                         // udpate players list
                         getPlayers();
                     });
                 });
 
-
                 return game;
+            }
+
+            function searchPlayerByName(searchString) {
+                return $filter("filter")(self.players, searchString);
             }
 
             /**
@@ -265,7 +366,7 @@
                 }
 
                 var playersPrepared;
-                preparePlayers(self.newGame.playerAName.trim(), self.newGame.playerBName.trim()).then(function(players){
+                preparePlayers(self.newGame.playerAName.trim(), self.newGame.playerBName.trim()).then(function (players) {
                     playersPrepared = players;
 
                     var playerA = playersPrepared.A;
@@ -295,102 +396,35 @@
 
             };
 
-            self.setFakeValues = function () {
-                /*
-                var sA = Math.round((Math.random() * 10) / 2);
-                var sB = Math.round((Math.random() * 10) / 2);
-                if (sA === sB && ratingService.scoreIsBool) {
-                    sA += 1;
-                }
-
-                var nA = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
-                var nB = Math.random().toString(36).replace(/[^a-z]+/g, "").substr(0, 1).toUpperCase();
-
-                // Nom des joueurs qui jouent beaucoup
-                var mnA = "Rennes";
-                var mnB = "Nantes";
-
-                var mockTeams = {
-                    "A": "Brest",
-                    "B": "Bordeaux",
-                    "C": "La Roche sur Yon",
-                    "D": "Orleans",
-                    "E": "Tours",
-                    "F": "Poitiers"
-                };
-
-                nA = mockTeams[nA] ? mockTeams[nA] : nA;
-                nB = mockTeams[nB] ? mockTeams[nB] : nB;
-
-
-                nA = nA.replace(/^[G-Z]{1}$/g, mnA);
-                nB = nB.replace(/[G-Z]{1}$/g, mnB);
-                if (nA === nB) {
-                    nA = mnA;
-                    nB = mnB;
-                }
-
-                self.newGame = {
-                    "playerAName": nA,
-                    "scoreA": sA,
-                    "scoreB": sB,
-                    "playerBName": nB
-                };*/
-            };
-
             self.resetAll = function () {
                 localStorage.setItem("games", "[]");
                 localStorage.setItem("players", "[]");
+                localStorage.setItem("teams", "[]");
                 self.games = [];
                 self.players = [];
+                self.teams = [];
             };
 
             self.loadAll = function () {
                 getGames();
                 getPlayers();
+                getTeams();
             };
 
             $scope.refreshAll = self.loadAll;
 
 
-            self.mockGames = function (count) {
-                $log.info(count);
-                /*
-                $scope.generating = true;
-                var timer = "Mock " + count + " games";
-                var start;
-                var end;
-                if (window.performance) {
-                    start = window.performance.now();
-                } else {
-                    start = new Date().getTime();
-                }
-                console.time(timer);
-                var initialCount = parseInt(self.games.length);
-                while (self.games.length < (initialCount + count)) {
-                    if (!self.playerAName) {
-                        self.setFakeValues();
-                    }
-                    self.save();
-                }
-                console.timeEnd(timer);
-                if (window.performance) {
-                    end = window.performance.now();
-                } else {
-                    end = new Date().getTime();
-                }
+            self.searchPlayer = function(playerName){
+                self.playerSearched = playerName;
+                return searchPlayerByName(playerName);
+            };
 
-                $mdToast.show(
-                    $mdToast.simple()
-                        .content(count + " games generated in " + Math.round(end - start) + " ms.")
-                        .position("bottom right")
-                        .hideDelay(3000)
-                );
-                $scope.generating = false;
-
-                //$log.info("games : " + self.games.length);
-
-                 */
+            self.createPlayer = function (name) {
+                playerService.add(name).then(function (newPlayer) {
+                    self.playerSearched = "";
+                    getPlayers();
+                    //$scope.$digest();
+                });
             };
         };
 
@@ -413,7 +447,7 @@
             templateUrl: "views/app-content.html",
             replace: true,
             controllerAs: "appContent",
-            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "parsePlayersService", "parseGamesService", appContentDirectiveController],
+            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "parsePlayersService", "parseTeamgamesService", "parseTeamsService", "$filter", appContentDirectiveController],
             link: appContentLink
         };
     });

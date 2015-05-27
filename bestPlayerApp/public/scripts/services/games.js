@@ -61,7 +61,7 @@
 
             function saveGames(games) {
                 var deferred = $q.defer();
-                localStorage.setItem("games", JSON.stringify(games))
+                localStorage.setItem("games", JSON.stringify(games));
                 deferred.resolve(games);
                 return deferred.promise;
             }

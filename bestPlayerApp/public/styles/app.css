@@ -46,6 +46,9 @@
 
 .player .avatar img{
     max-height:24px;
+    top: 6px;
+    position: relative;
+    border-radius: 1em;
 }
 
 .game {
