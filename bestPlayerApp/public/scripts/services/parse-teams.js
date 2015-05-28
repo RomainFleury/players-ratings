@@ -10,7 +10,7 @@
         this.userName = "";
         this.basePoints = 1500;
 
-        this.$get = ["$log", "$q", function ($log, $q) {
+        this.$get = ["$log", "$q", "parsePlayersService", function ($log, $q, playerService) {
 
             var userName = this.userName;
             var basePoints = this.basePoints;
@@ -63,6 +63,7 @@
             }
 
 
+            /*
             function saveTeam(team) {
                 var newTeam = new parseTeam;
                 //var ACLs = User.acl();
@@ -78,6 +79,53 @@
                         deferred.resolve(prepareTeamToList(savedTeam));
                     }
                 );
+            }*/
+
+            /**
+             *
+             * @param players
+             * @returns {Array}
+             */
+            function idsFromPlayers(players){
+                var playersIds = [];
+                for(var p=0;p<players.length;p++){
+                    playersIds.push(players[p].id);
+                }
+                playersIds = playersIds.sort();
+                return playersIds;
+            }
+
+            function findTeamByPlayers(players) {
+                var deferred = $q.defer();
+                var qb = new Parse.Query(parseTeam);
+                var usernameQuery = qb.matches("username", userName);
+                var query = Parse.Query.or(usernameQuery);
+                query.limit(100);
+
+                var playersIds = idsFromPlayers(players);
+
+                query.find({
+                    success: function (results) {
+                        if (results.length > 0) {
+                            playersIds = JSON.stringify(playersIds);
+                            for (var i = 0; i < results.length; i++) {
+                                if (JSON.stringify(results[i].attributes.playersIds) === playersIds) {
+                                    var team = prepareTeamToList(results[i]);
+                                    deferred.resolve(team);
+                                    break;
+                                }
+                            }
+                            deferred.reject();
+                        } else {
+                            deferred.reject();
+                        }
+                    },
+                    error: function (error) {
+                        //alert("Error: " + error.code + " " + error.message);
+                        deferred.reject(error);
+                    }
+                });
+                return deferred.promise;
             }
 
             function findTeamByName(teamName) {
@@ -124,30 +172,75 @@
                 return deferred.promise;
             }
 
-            function updateTeam(team) {
+            function updatePlayers(playersIds, totalTeamPointsGained){
+                $log.debug("UPDATE PLAYERS, ids");
+                $log.debug(playersIds);
+                $log.debug("totalTeamPointsGained");
+                $log.debug(totalTeamPointsGained);
                 var deferred = $q.defer();
+                if(playersIds.length <= 0){
+                    $log.error("players empty in a team ? WTF ?");
+                    throw new EventException();
+                }
+                var pointsPerPlayer = (totalTeamPointsGained / playersIds.length);
+
+                for(var i= 0; i < playersIds.length; i++){
+                    debugger;
+                    playerService.findById(playersIds[i]).then(function(player){
+                        debugger;
+                        player.gamesCount += 1;
+                        player.rating += pointsPerPlayer;
+                        playerService.update(player).then(function(){
+                            debugger;
+                            if((i+1) >= playersIds.length){
+                                $log.debug("resolve update players;");
+                                deferred.resolve();
+                            }
+                        });
+                    });
+                }
+                return deferred.promise;
+            }
+
+            function updateTeam(team, pointsGained) {
+                var updateFinishedPromise = $q.defer();
                 var query = new Parse.Query(parseTeam);
                 query.get(team.id, {
-                    success: function (savedTeam) {
-                        savedTeam.save({
+                    success: function (teamToUpdate) {
+                        $log.debug("teamToUpdate.save");
+                        teamToUpdate.save({
+                            "name":team.name,
                             "rating":team.rating,
+                            "avatar":team.avatar,
                             "gamesCount":team.gamesCount
-                        }).then(function () {
-                            deferred.resolve(prepareTeamToList(savedTeam))
+                        }).then(function (savedTeam) {
+                            $log.debug("team saved, update players");
+                            updatePlayers(team.playersIds, pointsGained).then(
+                                function(){
+                                    updateFinishedPromise.resolve(prepareTeamToList(savedTeam));
+                                },
+                                function(fail){
+                                    $log.debug(fail);
+                                    debugger;
+                                    updateFinishedPromise.reject(fail);
+                                }
+                            );
                         });
                     },
                     error: function (error) {
                         //alert("Error: " + error.code + " " + error.message);
-                        deferred.reject(error);
+                        updateFinishedPromise.reject(error);
                     }
                 });
-                return deferred.promise;
+                return updateFinishedPromise.promise;
             }
 
-            function addTeam(teamName, playersIds) {
+            function addTeam(teamName, players) {
                 var deferred = $q.defer();
                 var team = angular.copy(teamFormat);
                 team.name = teamName;
+
+                var playersIds = idsFromPlayers(players);
 
                 var newTeam = new parseTeam;
                 //var ACLs = User.acl();
@@ -177,6 +270,7 @@
                 "format": angular.copy(teamFormat),
                 "findByName": findTeamByName,
                 "findById": findTeamById,
+                "findByPlayers": findTeamByPlayers,
                 "list": getTeams,
                 "remove": removeTeam,
                 "add": addTeam,

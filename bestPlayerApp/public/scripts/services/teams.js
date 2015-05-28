@@ -79,7 +79,10 @@
                 return deferred.promise;
             }
 
-            function updateTeam(team) {
+
+
+
+            function updateTeam(team, pointsGained) {
                 var deferred = $q.defer();
 
                 var teams = getTeams();

@@ -41,12 +41,14 @@
 
                 teamAId: teamA.id,
                 scoreA: scoreA,
+                teamAPointsEarned: (teamA.rating - ratingA),
                 teamARatingBeforeGame: ratingA,
                 teamARatingAfterGame: teamA.rating,
                 teamAQuotation: Math.round((1 / coteA) * 100) / 100,
 
                 teamBId: teamB.id,
                 scoreB: scoreB,
+                teamBPointsEarned: (teamB.rating - ratingB),
                 teamBRatingBeforeGame: ratingB,
                 teamBRatingAfterGame: teamB.rating,
                 teamBQuotation: Math.round((1 / coteB) * 100) / 100
@@ -65,9 +67,7 @@
                         var games = [];
                         if (results.length > 0) {
                             for (var i = 0; i < results.length; i++) {
-                                if (results[i].attributes && results[i].attributes.data) {
-                                    games[i] = JSON.parse(results[i].attributes.data);
-                                }
+                                games[i] = prepareGameToList(results[i]);
                             }
                         }
                         deferred.resolve(games);
@@ -80,17 +80,55 @@
                 return deferred.promise;
             }
 
+            function prepareGameToList(savedGame){
+                var tmp = angular.copy(gameFormat);
+                tmp.id = savedGame.id;
+                tmp.username = savedGame.attributes.username;
+                tmp.date = savedGame.attributes.date;
+                tmp.teamAExpectedVictory = savedGame.attributes.teamAExpectedVictory;
+                tmp.teamAVictory = savedGame.attributes.teamAVictory;
+                tmp.teamAId = savedGame.attributes.teamAId;
+                tmp.scoreA = savedGame.attributes.scoreA;
+                tmp.teamAPointsEarned = savedGame.attributes.teamAPointsEarned;
+                tmp.teamARatingBeforeGame = savedGame.attributes.teamARatingBeforeGame;
+                tmp.teamARatingAfterGame = savedGame.attributes.teamARatingAfterGame;
+                tmp.teamAQuotation = savedGame.attributes.teamAQuotation;
+                tmp.teamBId = savedGame.attributes.teamBId;
+                tmp.scoreB = savedGame.attributes.scoreB;
+                tmp.teamBPointsEarned = savedGame.attributes.teamBPointsEarned;
+                tmp.teamBRatingBeforeGame = savedGame.attributes.teamBRatingBeforeGame;
+                tmp.teamBRatingAfterGame = savedGame.attributes.teamBRatingAfterGame;
+                tmp.teamBQuotation = savedGame.attributes.teamBQuotation;
+                tmp.createdAt = savedGame.createdAt;
+                tmp.username = userName;
+                return tmp;
+            }
+
             function saveGame(game) {
                 var deferred = $q.defer();
                 var newGame = new parseGame;
                 //var ACLs = User.acl();
                 newGame.save({
-                        "username": userName,
-                        "data": JSON.stringify(game)
+                        "date": game.date,
+                        "teamAExpectedVictory": game.teamAExpectedVictory,
+                        "teamAVictory": game.teamAVictory,
+                        "teamAId": game.teamAId,
+                        "scoreA": game.scoreA,
+                        "teamAPointsEarned": game.teamAPointsEarned,
+                        "teamARatingBeforeGame": game.teamARatingBeforeGame,
+                        "teamARatingAfterGame": game.teamARatingAfterGame,
+                        "teamAQuotation": game.teamAQuotation,
+                        "teamBId": game.teamBId,
+                        "scoreB": game.scoreB,
+                        "teamBRatingBeforeGame": game.teamBRatingBeforeGame,
+                        "teamBRatingAfterGame": game.teamBRatingAfterGame,
+                        "teamBPointsEarned": game.teamBPointsEarned,
+                        "teamBQuotation": game.teamBQuotation,
+                        "username": userName
                     }
                 ).then(
                     function (savedGames) {
-                        deferred.resolve(JSON.parse(savedGames.attributes.data));
+                        deferred.resolve(prepareGameToList(savedGames));
                     }
                 );
                 return deferred.promise;
@@ -99,7 +137,6 @@
             function addGame(game) {
                 //var newGame = angular.copy(gameFormat);
                 var gameDate = new Date();
-                game.id = gameDate.getTime();
                 if (!game.date) {
                     game.date = gameDate;
                 }
@@ -116,26 +153,3 @@
         }];
     }]);
 })();
-
-
-var t = {
-    "user": "digitaleo",
-    "date": "2015-03-27T10:58:48.042Z",
-    "teamAExpectedVictory": true,
-    "teamAVictory": true,
-    "teamAId": "vzzBqcyy2A",
-    "teamAName": "ClémentM",
-    "scoreA": 4,
-    "teamARatingBeforeGame": 1677,
-    "teamARatingAfterGame": 1706.3566133482893,
-    "teamAPointsEarned": 29.3566133483,
-    "teamAQuotation": 1.92,
-    "teamBId": "KCkNaQY8xP",
-    "teamBName": "ClémentR",
-    "scoreB": 2,
-    "teamBRatingBeforeGame": 1662,
-    "teamBRatingAfterGame": 1638.6433866517107,
-    "teamBPointsEarned": -23.3566133483,
-    "teamBQuotation": 2.09,
-    "id": 1427968808528
-};

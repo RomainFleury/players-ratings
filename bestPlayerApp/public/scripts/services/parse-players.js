@@ -127,6 +127,8 @@
                 query.get(player.id, {
                     success: function (savedPlayer) {
                         savedPlayer.save({
+                            "name":player.name,
+                            "avatar":player.avatar,
                             "rating":player.rating,
                             "gamesCount":player.gamesCount
                         }).then(function () {
