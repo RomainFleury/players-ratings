@@ -55,6 +55,9 @@
                 <div>&nbsp;</div>
             </div>
 
+            <div ng-if="appContent.addingGame" layout="row" layout-align="space-around">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
             <div class="newGameEditor" ng-if="!appContent.addingGame">
 
                 <form name="newGameForm" layout="column" ng-submit="appContent.save()">
@@ -113,7 +116,7 @@
             </div>
 
 
-            <div ng-if="true" class="list_of_games">
+            <div ng-if="appContent.games.length > 1" class="list_of_games">
                 <md-content>
                     <div class="game"
                          ng-repeat="game in appContent.games | orderBy:'createdAt':true | limitTo : gamesShown : 0"
