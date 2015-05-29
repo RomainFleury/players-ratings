@@ -49,7 +49,7 @@
 
     angular.module("bestPlayerApp").directive("appContent", function () {
 
-        var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, $q, ratingService, playerService, gameService, teamService, $filter) {
+        var appContentDirectiveController = function ($scope, $log, $mdSidenav, $mdToast, $q, ratingService, playerService, gameService, teamService, $filter) {
             var self = this;
 
             self.username = gameService.username;
@@ -135,7 +135,7 @@
                         "jellybeans", "macaroon", "candy", "wafer", "sesame",
                         "snaps", "pie", "danish", "chupa chups", "chocolate bar", "cotton",
                         "candy", "sweet", "cheesecake", "ice", "cream", "jelly",
-                        "brownie", "soufflé", "carrot cake", "toffee", "ice cream", "icing", "bear",
+                        "brownie", "souffle", "carrot cake", "toffee", "ice cream", "icing", "bear",
                         "claw", "cookie", "topping", "claw", "pastry", "lollipop", "topping","ham","fine","ugly","fast",
                         "jaws","bag","sky","team","soldiers", "pizza", "water", "beer", "foot", "head"
                     ];
@@ -428,7 +428,7 @@
             templateUrl: "views/app-content.html",
             replace: true,
             controllerAs: "appContent",
-            controller: ["$scope", "$http", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "parsePlayersService", "parseTeamgamesService", "parseTeamsService", "$filter", appContentDirectiveController],
+            controller: ["$scope", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "parsePlayersService", "parseTeamgamesService", "parseTeamsService", "$filter", appContentDirectiveController],
             link: appContentLink
         };
     });

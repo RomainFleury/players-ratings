@@ -55,7 +55,7 @@
             };
 
             // PARSE
-            var parseGame = Parse.Object.extend("teamgame");
+            var ParseGame = Parse.Object.extend("teamgame");
 
             function prepareGameToList(savedGame) {
                 var tmp = angular.copy(gameFormat);
@@ -106,7 +106,7 @@
 
             function saveGame(game) {
                 var deferred = $q.defer();
-                var newGame = new parseGame;
+                var newGame = new ParseGame();
                 //var ACLs = User.acl();
                 newGame.save({
                         "date": game.date,
