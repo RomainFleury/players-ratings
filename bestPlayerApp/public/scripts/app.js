@@ -291,9 +291,9 @@
                 game.teamBPointsEarned = game.teamBRatingAfterGame - game.teamBRatingBeforeGame;
 
                 // update teams
-                teamService.update(teamA, game.teamAPointsEarned).then(function (teamAUpdated) {
+                teamService.update(teamA, game.teamAPointsEarned).then(function () {
                     $log.debug("teamA saved");
-                    teamService.update(teamB, game.teamBPointsEarned).then(function (teaBAUpdated) {
+                    teamService.update(teamB, game.teamBPointsEarned).then(function () {
                         $log.debug("teamB Saved");
                         // udpate teams list
                         getTeams();
