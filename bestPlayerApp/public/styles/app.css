@@ -2,6 +2,10 @@
     cursor:wait;
 }
 
+.noselect{
+    cursor:default;
+}
+
 .formTitle{
     font-size: 1.3em;
     font-weight: 800;
@@ -20,6 +24,28 @@
 .player.gold-player .name{
     font-weight: bold;
     font-size: 1.1em;
+}
+
+
+.player .name {
+    line-height:20px;
+}
+
+.player .name.nonickname{
+    line-height:36px;
+}
+
+.player .nickname{
+    font-size: 13px;
+    font-weight: 500;
+    color: #777;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.player.gold-player .nickname{
+    color: #bbb;
 }
 
 .player .md-button .rating{
@@ -67,25 +93,42 @@
 }
 
 .game span.vs {
-    font-size: 1em;
+    font-size: 25px;
     bottom: 0;
     position: relative;
 }
 
 .game .player-name {
     font-size: 1.2em;
+    font-weight: 500;
+}
+
+.game .score.left{
+    padding-right:5px;
+}
+
+.game .score.right{
+    padding-left:5px;
 }
 
 .game .winner{
     color:rgb(0,150,136);
 }
 
-.game .player-name.left, .game .cotes .left {
+.game .player-name.left, .game .cotes .left, .game .composition .left  {
     text-align: right;
 }
 
-.game .player-name.right, .game .cotes .right {
+.game .player-name.left{
+    margin-right:1em;
+}
+
+.game .player-name.right, .game .cotes .right, .game .composition .right {
     text-align: left;
+}
+
+.game .player-name.right{
+    margin-left:1em;
 }
 
 .game .cotes{
@@ -96,6 +139,16 @@
 .game .cotes .winner-gamble{
     color:rgb(0,150,136);
     font-weight:500;
+}
+
+.game .composition .left{
+
+}
+
+.game .gamePlayers{
+    color: rgba(0,150,136, 0.7);
+    font-size: 1em;
+    font-weight: 300;
 }
 
 .game .date{

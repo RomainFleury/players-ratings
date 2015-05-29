@@ -86,7 +86,7 @@
 
             function saveGame(game) {
                 var deferred = $q.defer();
-                var newGame = new parseGame;
+                var newGame = new parseGame();
                 //var ACLs = User.acl();
                 newGame.save({
                         "username": userName,

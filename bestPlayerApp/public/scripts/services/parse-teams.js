@@ -25,7 +25,7 @@
                 "gamesCount": 0,
                 "avatar": defaultAvatar,
                 "username": userName,
-                "playersIds":[]
+                "playersIds": []
             };
 
             function prepareTeamToList(team) {
@@ -64,31 +64,31 @@
 
 
             /*
-            function saveTeam(team) {
-                var newTeam = new parseTeam;
-                //var ACLs = User.acl();
-                newTeam.save({
-                        "username": userName,
-                        "name": team.name,
-                        "avatar": team.avatar,
-                        "rating": team.rating,
-                        "playersIds":team.playersIds
-                    }
-                ).then(
-                    function (savedTeam) {
-                        deferred.resolve(prepareTeamToList(savedTeam));
-                    }
-                );
-            }*/
+             function saveTeam(team) {
+             var newTeam = new parseTeam;
+             //var ACLs = User.acl();
+             newTeam.save({
+             "username": userName,
+             "name": team.name,
+             "avatar": team.avatar,
+             "rating": team.rating,
+             "playersIds":team.playersIds
+             }
+             ).then(
+             function (savedTeam) {
+             deferred.resolve(prepareTeamToList(savedTeam));
+             }
+             );
+             }*/
 
             /**
              *
              * @param players
              * @returns {Array}
              */
-            function idsFromPlayers(players){
+            function idsFromPlayers(players) {
                 var playersIds = [];
-                for(var p=0;p<players.length;p++){
+                for (var p = 0; p < players.length; p++) {
                     playersIds.push(players[p].id);
                 }
                 playersIds = playersIds.sort();
@@ -172,27 +172,24 @@
                 return deferred.promise;
             }
 
-            function updatePlayers(playersIds, totalTeamPointsGained){
-                $log.debug("UPDATE PLAYERS, ids");
+            function updatePlayers(playersIds, totalTeamPointsGained) {
+                $log.debug("UPDATE " + playersIds.length + " PLAYERS, ids");
                 $log.debug(playersIds);
                 $log.debug("totalTeamPointsGained");
                 $log.debug(totalTeamPointsGained);
                 var deferred = $q.defer();
-                if(playersIds.length <= 0){
+                if (playersIds.length <= 0) {
                     $log.error("players empty in a team ? WTF ?");
                     throw new EventException();
                 }
                 var pointsPerPlayer = (totalTeamPointsGained / playersIds.length);
 
-                for(var i= 0; i < playersIds.length; i++){
-                    debugger;
-                    playerService.findById(playersIds[i]).then(function(player){
-                        debugger;
+                for (var i = 0; i < playersIds.length; i++) {
+                    playerService.findById(playersIds[i]).then(function (player) {
                         player.gamesCount += 1;
                         player.rating += pointsPerPlayer;
-                        playerService.update(player).then(function(){
-                            debugger;
-                            if((i+1) >= playersIds.length){
+                        playerService.update(player).then(function () {
+                            if ((i + 1) >= playersIds.length) {
                                 $log.debug("resolve update players;");
                                 deferred.resolve();
                             }
@@ -209,17 +206,17 @@
                     success: function (teamToUpdate) {
                         $log.debug("teamToUpdate.save");
                         teamToUpdate.save({
-                            "name":team.name,
-                            "rating":team.rating,
-                            "avatar":team.avatar,
-                            "gamesCount":team.gamesCount
+                            "name": team.name,
+                            "rating": team.rating,
+                            "avatar": team.avatar,
+                            "gamesCount": team.gamesCount
                         }).then(function (savedTeam) {
                             $log.debug("team saved, update players");
                             updatePlayers(team.playersIds, pointsGained).then(
-                                function(){
+                                function () {
                                     updateFinishedPromise.resolve(prepareTeamToList(savedTeam));
                                 },
-                                function(fail){
+                                function (fail) {
                                     $log.debug(fail);
                                     debugger;
                                     updateFinishedPromise.reject(fail);
@@ -249,8 +246,8 @@
                         "name": teamName,
                         "avatar": defaultAvatar,
                         "rating": basePoints,
-                        "gamesCount":0,
-                        "playersIds":playersIds
+                        "gamesCount": 0,
+                        "playersIds": playersIds
                     }
                 ).then(
                     function (savedTeam) {

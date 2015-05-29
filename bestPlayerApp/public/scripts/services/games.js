@@ -16,15 +16,15 @@
             var scoreA = 2;
             var scoreB = 0;
             var playerA = {
-                "id":1,
-                "name":"A",
-                "rating":"1527"
+                "id": 1,
+                "name": "A",
+                "rating": "1527"
             };
             var ratingA = 1500;
             var playerB = {
-                "id":1,
-                "name":"A",
-                "rating":"1500"
+                "id": 1,
+                "name": "A",
+                "rating": "1500"
             };
             var ratingB = 1473;
             var coteA = 2;
@@ -41,14 +41,14 @@
                 scoreA: scoreA,
                 playerARatingBeforeGame: ratingA,
                 playerARatingAfterGame: playerA.rating,
-                playerAQuotation: Math.round((1/coteA)*100)/100,
+                playerAQuotation: Math.round((1 / coteA) * 100) / 100,
 
                 playerBId: playerB.id,
                 playerBName: playerB.name,
                 scoreB: scoreB,
                 playerBRatingBeforeGame: ratingB,
                 playerBRatingAfterGame: playerB.rating,
-                playerBQuotation: Math.round((1/coteB)*100)/100
+                playerBQuotation: Math.round((1 / coteB) * 100) / 100
             };
 
             function getGames() {
@@ -73,7 +73,7 @@
                 //var newGame = angular.copy(gameFormat);
                 var gameDate = new Date();
                 game.id = gameDate.getTime();
-                if(!game.date){
+                if (!game.date) {
                     game.date = gameDate;
                 }
 
@@ -81,7 +81,7 @@
 
                 // save games if player list changed
                 if (gamesCount < games.length) {
-                    saveGames(games).then(function(savedGames){
+                    saveGames(games).then(function (savedGames) {
                         $log.info("game added by service");
                         deferred.resolve(savedGames);
                     });
@@ -89,17 +89,18 @@
                 return deferred.promise;
             }
 
+            /*
             function removeGame(game) {
                 if (game.id) {
                     //TODO
                 }
-            }
+            }*/
 
             return {
                 "format": angular.copy(gameFormat),
                 "list": getGames,
                 "save": saveGames,
-                "remove": removeGame,
+                //"remove": removeGame,
                 "add": addGame
             };
         }];

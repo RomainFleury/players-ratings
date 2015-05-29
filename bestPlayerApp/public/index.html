@@ -33,14 +33,18 @@
     <link rel="stylesheet" type="text/css" href="/styles/app.css" />
 </head>
 <body layout="column" ng-controller="AppCtrl">
-<md-toolbar layout="row">
-    <md-button ng-click="toggleSidenav('left')" hide-gt-sm class="menuBtn">
-        <span class="visually-hidden">Menu</span>
+<md-button ng-click="toggleSidenav('left')" hide-gt-sm class="menuBtn md-fab md-accent md-fab-top-left" aria-label="Classement">
+    <i class="fa fa-bars"></i>
+    <md-tooltip>Classement</md-tooltip>
+</md-button>
+<md-toolbar layout="row" hide-sm hide-gt-sm>
+    <md-button ng-click="toggleSidenav('left')">
+        <span class="visually-hidden">Ranking</span>
         <i class="fa fa-users"></i>
     </md-button>
     <div class="md-toolbar-tools">
         <h3>
-            <span>Best player app</span>
+            <span>Who is the king ?</span>
         </h3>
     </div>
     <!--

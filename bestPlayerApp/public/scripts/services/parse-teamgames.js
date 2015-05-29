@@ -57,30 +57,7 @@
             // PARSE
             var parseGame = Parse.Object.extend("teamgame");
 
-            function getGames() {
-                var deferred = $q.defer();
-                var game = Parse.Object.extend("teamgame");
-                var query = new Parse.Query(game);
-                query.equalTo("username", userName);
-                query.find({
-                    success: function (results) {
-                        var games = [];
-                        if (results.length > 0) {
-                            for (var i = 0; i < results.length; i++) {
-                                games[i] = prepareGameToList(results[i]);
-                            }
-                        }
-                        deferred.resolve(games);
-                    },
-                    error: function (error) {
-                        //alert("Error: " + error.code + " " + error.message);
-                        deferred.reject(error);
-                    }
-                });
-                return deferred.promise;
-            }
-
-            function prepareGameToList(savedGame){
+            function prepareGameToList(savedGame) {
                 var tmp = angular.copy(gameFormat);
                 tmp.id = savedGame.id;
                 tmp.username = savedGame.attributes.username;
@@ -102,6 +79,29 @@
                 tmp.createdAt = savedGame.createdAt;
                 tmp.username = userName;
                 return tmp;
+            }
+
+            function getGames() {
+                var deferred = $q.defer();
+                var game = Parse.Object.extend("teamgame");
+                var query = new Parse.Query(game);
+                query.equalTo("username", userName);
+                query.find({
+                    success: function (results) {
+                        var games = [];
+                        if (results.length > 0) {
+                            for (var i = 0; i < results.length; i++) {
+                                games[i] = prepareGameToList(results[i]);
+                            }
+                        }
+                        deferred.resolve(games);
+                    },
+                    error: function (error) {
+                        //alert("Error: " + error.code + " " + error.message);
+                        deferred.reject(error);
+                    }
+                });
+                return deferred.promise;
             }
 
             function saveGame(game) {
@@ -146,6 +146,7 @@
             }
 
             return {
+                "username": userName,
                 "format": angular.copy(gameFormat),
                 "list": getGames,
                 "add": addGame

@@ -52,6 +52,7 @@
         var appContentDirectiveController = function ($scope, $http, $log, $mdSidenav, $mdToast, $q, ratingService, playerService, gameService, teamService, $filter) {
             var self = this;
 
+            self.username = gameService.username;
             self.games = [];
             self.players = [];
             self.teams = [];
@@ -122,43 +123,28 @@
             }
 
             /**
-             * Get a player from his name, or creates it.
-             *
-             * @param playerName
-             * @returns {*}
-             */
-            function preparePlayer(playerName) {
-                var def = $q.defer();
-
-                playerService.findByName(playerName).then(function (player) {
-                    def.resolve(player);
-                }, function () {
-                    playerService.add(playerName).then(function (player) {
-                        def.resolve(player);
-                    });
-                });
-                return def.promise;
-            }
-
-            /**
              *
              * @returns {string}
              */
-            function randomTeamName(){
-                var names = [
-                    "toffee","croissant", "oat","cake", "gummies", "ice", "cream", "danish",
-                    "jellybeans", "macaroon", "candy", "wafer", "sesame",
-                    "snaps", "pie", "danish", "chupa chups", "chocolate bar", "cotton",
-                    "candy", "sweet", "cheesecake", "ice", "cream", "jelly-o","jujubes",
-                    "brownie", "soufflé", "carrot cake", "toffee", "ice cream", "icing", "bear",
-                    "claw", "cookie", "topping", "claw", "pastry", "lollipop", "topping","ham","fine","ugly","fast",
-                    "jawbone","bag","sky","team","soldiers"
-                ];
+            function randomTeamName(players){
+                if(players.length === 1){
+                    return players[0].name;
+                }else{
+                    var names = [
+                        "toffee","croissant", "oat","cake", "gummies", "ice", "cream", "danish",
+                        "jellybeans", "macaroon", "candy", "wafer", "sesame",
+                        "snaps", "pie", "danish", "chupa chups", "chocolate bar", "cotton",
+                        "candy", "sweet", "cheesecake", "ice", "cream", "jelly",
+                        "brownie", "soufflé", "carrot cake", "toffee", "ice cream", "icing", "bear",
+                        "claw", "cookie", "topping", "claw", "pastry", "lollipop", "topping","ham","fine","ugly","fast",
+                        "jaws","bag","sky","team","soldiers", "pizza", "water", "beer", "foot", "head"
+                    ];
 
-                var a = Math.floor(Math.random() * names.length);
-                var b = Math.floor(Math.random() * names.length);
+                    var a = Math.floor(Math.random() * names.length);
+                    var b = Math.floor(Math.random() * names.length);
 
-                return names[a].charAt(0).toUpperCase() + names[a].substr(1) +' '+ names[b];
+                    return names[a].charAt(0).toUpperCase() + names[a].substr(1) +" "+ names[b];
+                }
             }
 
             /**
@@ -173,7 +159,7 @@
                 teamService.findByPlayers(players).then(function (team) {
                     def.resolve(team);
                 }, function () {
-                    teamService.add(randomTeamName(), players).then(function (player) {
+                    teamService.add(randomTeamName(players), players).then(function (player) {
                         def.resolve(player);
                     });
                 });
@@ -218,8 +204,6 @@
 
                 return preparePromise.promise;
             }
-
-
 
 
             /**
@@ -387,8 +371,7 @@
             self.createPlayer = function (name) {
                 playerService.add(name).then(function (newPlayer) {
                     self.playerSearched = "";
-                    getPlayers();
-                    //$scope.$digest();
+                    self.players.push(newPlayer);
                 });
             };
 

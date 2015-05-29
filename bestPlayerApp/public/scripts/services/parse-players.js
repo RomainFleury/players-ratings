@@ -24,7 +24,8 @@
                 "rating": basePoints,
                 "gamesCount": 0,
                 "avatar": defaultAvatar,
-                "username": userName
+                "username": userName,
+                "nickname": ""
             };
 
             function preparePlayerToList(player) {
@@ -35,6 +36,7 @@
                 tmp.rating = player.attributes.rating;
                 tmp.avatar = player.attributes.avatar;
                 tmp.gamesCount = player.attributes.gamesCount;
+                tmp.nickname = player.attributes.nickname;
                 return tmp;
             }
 
@@ -60,22 +62,23 @@
                 return deferred.promise;
             }
 
-
-            function savePlayer(player) {
-                var newPlayer = new parsePlayer;
-                //var ACLs = User.acl();
-                newPlayer.save({
-                        "username": userName,
-                        "name": player.name,
-                        "avatar": player.avatar,
-                        "rating": player.rating
-                    }
-                ).then(
-                    function (savedPlayer) {
-                        deferred.resolve(preparePlayerToList(savedPlayer));
-                    }
-                );
-            }
+            /*
+             function savePlayer(player) {
+             var newPlayer = new parsePlayer();
+             //var ACLs = User.acl();
+             newPlayer.save({
+             "username": userName,
+             "name": player.name,
+             "avatar": player.avatar,
+             "rating": player.rating
+             }
+             ).then(
+             function (savedPlayer) {
+             deferred.resolve(preparePlayerToList(savedPlayer));
+             }
+             );
+             }
+             */
 
             function findPlayerByName(playerName) {
                 var deferred = $q.defer();
@@ -127,12 +130,13 @@
                 query.get(player.id, {
                     success: function (savedPlayer) {
                         savedPlayer.save({
-                            "name":player.name,
-                            "avatar":player.avatar,
-                            "rating":player.rating,
-                            "gamesCount":player.gamesCount
+                            "name": player.name,
+                            "avatar": player.avatar,
+                            "rating": player.rating,
+                            "gamesCount": player.gamesCount,
+                            "nickname": player.nickname
                         }).then(function () {
-                            deferred.resolve(preparePlayerToList(savedPlayer))
+                            deferred.resolve(preparePlayerToList(savedPlayer));
                         });
                     },
                     error: function (error) {
@@ -148,14 +152,15 @@
                 var player = angular.copy(playerFormat);
                 player.name = playerName;
 
-                var newPlayer = new parsePlayer;
+                var newPlayer = new parsePlayer();
                 //var ACLs = User.acl();
                 newPlayer.save({
                         "username": userName,
                         "name": playerName,
                         "avatar": defaultAvatar,
                         "rating": basePoints,
-                        "gamesCount":0
+                        "gamesCount": 0,
+                        "nickname": ""
                     }
                 ).then(
                     function (savedPlayer) {
@@ -168,6 +173,7 @@
             function removePlayer(player) {
                 if (player.id) {
                     //TODO
+                    console.log("remove player" + player.id);
                 }
             }
 
