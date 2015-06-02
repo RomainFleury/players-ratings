@@ -43,6 +43,14 @@
     text-overflow: ellipsis;
 }
 
+.player .teams-ranking-playername{
+    font-size: 13px;
+    font-weight: 500;
+    color: #bbb;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
 .player.gold-player .nickname{
     color: #bbb;

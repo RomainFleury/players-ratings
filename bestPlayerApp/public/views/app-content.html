@@ -44,9 +44,12 @@
                             <md-button layout-fill>
                                 <div layout="row" flex>
                                     <div class="rating">{{team.rating | number:2}}</div>
-                                    <div class="name" ng-class="{'nonickname':!team.nickname}" flex layout="column">
+                                    <div class="name" flex layout="column">
                                         <div flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{team.name}}</div>
                                         <div flex class="nickname" ng-if="team.nickname">"{{team.nickname}}"</div>
+                                        <div flex class="teams-ranking-playername" ng-repeat="player in appContent.playersOfTeam(team.id, team.playersIds)">
+                                        {{player.name}}
+                                        </div>
                                     </div>
                                     <div class="avatar" ng-if="team.avatar"><img ng-src="{{team.avatar}}"/></div>
                                 </div>
