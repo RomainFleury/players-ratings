@@ -8,25 +8,57 @@
                 </h3>
             </div>
         </md-toolbar>
-        <md-content flex>
-            <div class="player"
-                 ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
-                 ng-repeat="player in appContent.players | orderBy:'-rating'">
-                <md-button layout-fill>
-                    <div layout="row" flex>
-                        <div class="rating">{{player.rating | number:2}}</div>
-                        <div class="name" ng-class="{'nonickname':!player.nickname}" flex layout="column">
-                            <div flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</div>
-                            <div flex class="nickname" ng-if="player.nickname">"{{player.nickname}}"</div>
+
+        <md-tabs class="md-accent" md-selected="data.selectedIndex" md-align-tabs="{{data.bottom ? 'bottom' : 'top'}}" md-dynamic-height>
+            <md-tab id="tab1">
+                <md-tab-label>Joueurs</md-tab-label>
+                <md-tab-body>
+                    <md-content flex>
+                        <div class="player"
+                             ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
+                             ng-repeat="player in appContent.players | orderBy:'-rating'">
+                            <md-button layout-fill>
+                                <div layout="row" flex>
+                                    <div class="rating">{{player.rating | number:2}}</div>
+                                    <div class="name" ng-class="{'nonickname':!player.nickname}" flex layout="column">
+                                        <div flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</div>
+                                        <div flex class="nickname" ng-if="player.nickname">"{{player.nickname}}"</div>
+                                    </div>
+                                    <div class="avatar" ng-if="player.avatar"><img ng-src="{{player.avatar}}"/></div>
+                                </div>
+                                <md-tooltip>
+                                    "{{player.nickname}}" - {{player.gamesCount}} matchs joués
+                                </md-tooltip>
+                            </md-button>
                         </div>
-                        <div class="avatar" ng-if="player.avatar"><img ng-src="{{player.avatar}}"/></div>
-                    </div>
-                    <md-tooltip>
-                        "{{player.nickname}}" - {{player.gamesCount}} matchs joués
-                    </md-tooltip>
-                </md-button>
-            </div>
-        </md-content>
+                    </md-content>
+                </md-tab-body>
+            </md-tab>
+            <md-tab id="tab1">
+                <md-tab-label>Equipes</md-tab-label>
+                <md-tab-body>
+                    <md-content flex>
+                        <div class="player"
+                             ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="row"
+                             ng-repeat="team in appContent.teams | filter: appContent.teamFilter | orderBy:'-rating'">
+                            <md-button layout-fill>
+                                <div layout="row" flex>
+                                    <div class="rating">{{team.rating | number:2}}</div>
+                                    <div class="name" ng-class="{'nonickname':!team.nickname}" flex layout="column">
+                                        <div flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{team.name}}</div>
+                                        <div flex class="nickname" ng-if="team.nickname">"{{team.nickname}}"</div>
+                                    </div>
+                                    <div class="avatar" ng-if="team.avatar"><img ng-src="{{team.avatar}}"/></div>
+                                </div>
+                                <md-tooltip>
+                                    "{{team.nickname}}" - {{team.gamesCount}} matchs joués
+                                </md-tooltip>
+                            </md-button>
+                        </div>
+                    </md-content>
+                </md-tab-body>
+            </md-tab>
+        </md-tabs>
     </md-sidenav>
     <div layout="row" flex id="content">
         <md-button class="md-fab md-accent md-fab-top-right" ng-if="!appContent.showGameEditor"

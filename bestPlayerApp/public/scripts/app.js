@@ -407,6 +407,11 @@
                 self.playersOfTeams[teamId] = players;
                 return players;
             };
+
+
+            self.teamFilter = function (team) {
+                return team.playersIds.length >= 2;
+            };
         };
 
         var appContentLink = function (scope, element, attrs, controller) {
