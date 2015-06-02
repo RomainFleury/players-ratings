@@ -85,6 +85,10 @@
     border-radius: 1em;
 }
 
+md-tabs.rankings-sidenav-tabs{
+    height:100%;
+}
+
 .game {
     padding: 25px 15px;
     font-size: 1.3em;
