@@ -1,0 +1,15 @@
+<div>
+  <md-button class="md-fab md-accent md-fab-top-right" ng-if="!testContent.showGameEditor"
+     ng-click="testContent.showGameEditor = true" aria-label="Ajouter un match">
+    <i class="fa fa-plus"></i>
+    <md-tooltip>Ajouter un match</md-tooltip>
+  </md-button>
+  <md-content flex class="md-padding">
+
+    <div ng-if="testContent.addingGame" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    </div>
+    <div class="newGameEditor" ng-if="!testContent.addingGame">
+
+  </md-content>
+</div>

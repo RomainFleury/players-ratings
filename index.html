@@ -1,0 +1,96 @@
+<html lang="en" ng-app="bestPlayerApp">
+<head>
+    <title>Best Player</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable = no">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="apple-touch-icon" sizes="57x57" href="app/assets/icons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="app/assets/icons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="app/assets/icons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="app/assets/icons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="app/assets/icons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="app/assets/icons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="app/assets/icons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="app/assets/icons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="app/assets/icons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="app/assets/icons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="app/assets/icons/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="app/assets/icons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="app/assets/icons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="app/assets/icons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-TileImage" content="mstile-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- build:css styles/app.min.css -->
+    <link rel="stylesheet" type="text/css" href="app/styles/app.css" />
+    <!-- endbuild -->
+
+    <!-- build:css styles/vendor.min.css -->
+    <link rel="stylesheet" href="libs/bower_components/angular-material/angular-material.min.css">
+    <link rel="stylesheet" href="libs/bower_components/font-awesome/css/font-awesome.min.css">
+    <!-- endbuild -->
+</head>
+<body layout="column" ng-controller="AppCtrl">
+<!-- <md-button ng-click="toggleSidenav('left')" hide-gt-sm class="menuBtn md-fab md-accent md-fab-top-left" aria-label="Classement">
+    <i class="fa fa-bars"></i>
+    <md-tooltip>Classement</md-tooltip>
+</md-button>
+<md-toolbar layout="row" hide-sm hide-gt-sm>
+    <md-button ng-click="toggleSidenav('left')">
+        <span class="visually-hidden">Ranking</span>
+        <i class="fa fa-users"></i>
+    </md-button>
+    <div class="md-toolbar-tools">
+        <h3>
+            <span>Who is the king ?</span>
+        </h3>
+    </div>
+    <md-button ng-click="toggleSidenav('import-data-right')" class="menuBtn"><i class="fa fa-cloud-download"></i></md-button>
+</md-toolbar> -->
+
+<!-- <app-content></app-content> -->
+<test-content></test-content>
+<footer>
+We are using node <script>document.write(process.versions.node)</script>,
+Chrome <script>document.write(process.versions.chrome)</script>,
+and Electron <script>document.write(process.versions.electron)</script>.
+</footer>
+
+<!-- build:js libs.js -->
+<script src="libs/bower_components/pouchdb/dist/pouchdb.min.js"></script>
+<script src="libs/bower_components/jquery/dist/jquery.min.js"></script>
+<script src="libs/parse.min.js"></script>
+
+<!-- Angular Material Dependencies -->
+<script src="libs/bower_components/angular/angular.min.js"></script>
+<script src="libs/bower_components/angular-animate/angular-animate.min.js"></script>
+<script src="libs/bower_components/angular-aria/angular-aria.min.js"></script>
+<script src="libs/bower_components/angular-route/angular-route.min.js"></script>
+<script src="libs/bower_components/angular-material/angular-material.min.js"></script>
+<!-- endbuild -->
+
+<!-- build:js app.js -->
+<script src="app/scripts/eloModule/module.js"></script>
+<script src="app/scripts/eloModule/adapted-elo-rating.js"></script>
+<script src="app/scripts/eloModule/chovanec-elo-rating.js"></script>
+<script src="app/scripts/services/players.js"></script>
+<script src="app/scripts/services/parse-players.js"></script>
+<script src="app/scripts/services/teams.js"></script>
+<script src="app/scripts/services/parse-teams.js"></script>
+<script src="app/scripts/services/games.js"></script>
+<script src="app/scripts/services/parse-games.js"></script>
+<script src="app/scripts/services/pouch-teamgames.js"></script>
+<!-- <script src="app/scripts/services/parse-teamgames.js"></script> -->
+<script src="app/scripts/app.js"></script>
+<script src="app/scripts/test-content.directive.js"></script>
+<script src="app/scripts/import-generated-data.js"></script>
+<!-- endbuild -->
+</body>
+</html>

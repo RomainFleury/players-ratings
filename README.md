@@ -13,10 +13,33 @@ For example, install http-server npm package :
 
 Then serve public folder :
 
-	http-server bestPlayerApp/public/
+	http-server .
 
 # Code checks
 
 Grunt default checks all js files.
 
 	grunt
+
+
+
+
+
+
+# LOCAL DEV SERVER
+
+Just run http server
+// npm http server
+http-server
+
+
+# Build cache file :
+
+TODO
+grunt ngtemplates
+ => creates cache/templates.js, containing html templates from /public_dev/templates/*.html
+
+
+# grunt :
+
+ grunt build deals with everything, prepares complete version in public folder.

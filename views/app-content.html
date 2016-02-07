@@ -1,0 +1,203 @@
+<div layout="row" flex>
+    <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
+                md-is-locked-open="true">
+                <!-- <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
+                            md-is-locked-open="$mdMedia('gt-sm')"> -->
+        <md-toolbar layout="row" class="noselect">
+            <div class="md-toolbar-tools">
+                <h3>
+                    <span>Best of {{appContent.username !== 'default' ? appContent.username : 'the rest'}}</span>
+                </h3>
+            </div>
+        </md-toolbar>
+
+        <md-tabs class="md-accent rankings-sidenav-tabs" md-selected="data.selectedIndex" md-align-tabs="{{data.bottom ? 'bottom' : 'top'}}" layout-fill>
+            <md-tab id="tab1" label="Joueurs">
+              <md-content>
+                <div class="player"
+                     ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="column"
+                     ng-repeat="player in appContent.players | orderBy:'-rating'">
+                    <md-button layout="row">
+                        <div layout="row" flex>
+                            <div class="rating">{{player.rating | number:2}}</div>
+                            <div class="name" ng-class="{'nonickname':!player.nickname}" flex layout="column">
+                                <div flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{player.name}}</div>
+                                <div flex class="nickname" ng-if="player.nickname">"{{player.nickname}}"</div>
+                            </div>
+                            <div class="avatar" ng-if="player.avatar"><img ng-src="{{player.avatar}}"/></div>
+                        </div>
+                        <md-tooltip>
+                            "{{player.nickname}}" - {{player.gamesCount}} matchs joués
+                        </md-tooltip>
+                    </md-button>
+                </div>
+              </md-content>
+            </md-tab>
+            <md-tab id="tab2" label="Equipes">
+              <md-content>
+                  <div class="player"
+                       ng-class="{'gold-player':$first, 'silver-player':$index===1, 'bronze-player':$index===2}" layout="column"
+                       ng-repeat="team in appContent.teams | filter: appContent.teamFilter | orderBy:'-rating'">
+                      <md-button layout="row">
+                          <div layout="row" flex>
+                              <div class="rating">{{team.rating | number:2}}</div>
+                              <div class="name" flex layout="column">
+                                  <div flex><i ng-if="$index <= 2" class="fa fa-trophy"></i> {{team.name}}</div>
+                                  <div flex class="nickname" ng-if="team.nickname">"{{team.nickname}}"</div>
+                                  <div flex class="teams-ranking-playername" ng-repeat="player in appContent.playersOfTeam(team.id, team.playersIds)">
+                                  {{player.name}}
+                                  </div>
+                              </div>
+                              <div class="avatar" ng-if="team.avatar"><img ng-src="{{team.avatar}}"/></div>
+                          </div>
+                          <md-tooltip>
+                              "{{team.nickname}}" - {{team.gamesCount}} matchs joués
+                          </md-tooltip>
+                      </md-button>
+                  </div>
+              </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-sidenav>
+    <div layout="row" flex id="content">
+      <md-button class="md-fab md-accent md-fab-top-right" ng-if="!appContent.showGameEditor"
+                 ng-click="appContent.showGameEditor = true" aria-label="Ajouter un match">
+          <i class="fa fa-plus"></i>
+          <md-tooltip>Ajouter un match</md-tooltip>
+      </md-button>
+      <md-content flex class="md-padding">
+
+          <div ng-if="appContent.addingGame" layout="row" layout-align="space-around">
+              <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+          </div>
+          <div class="newGameEditor" ng-if="!appContent.addingGame">
+
+              <form ng-if="appContent.showGameEditor" name="newGameForm" layout="column"
+                    ng-submit="appContent.save()">
+                  <md-button class="md-warn md-fab md-fab-top-right" ng-show="appContent.playerSearched.length >= 4"
+                             ng-click="appContent.createPlayer(appContent.playerSearched)"
+                             type="button">
+                      <i class="fa fa-plus"></i>
+                      <md-tooltip>
+                          Créer le joueur "{{appContent.playerSearched}}"
+                      </md-tooltip>
+                  </md-button>
+                  <div layout="row">
+                      <div class="playerA" layout="column" flex>
+                          <div class="formTitle">{{(appContent.newGame.playerAName) ? appContent.newGame.playerAName :
+                              'Equipe A'}}
+                          </div>
+
+                          <md-contact-chips
+                                  ng-model="appContent.newGame.playersA"
+                                  md-contacts="appContent.searchPlayer($query)"
+                                  md-contact-name="name"
+                                  md-contact-image="avatar"
+                                  md-contact-email="nickname"
+                                  md-require-match
+                                  filter-selected="false"
+                                  placeholder="Joueurs équipe A">
+                          </md-contact-chips>
+
+                          <md-input-container>
+                              <label>Score équipe A</label>
+                              <input ng-model="appContent.newGame.scoreA" type="number" required/>
+                          </md-input-container>
+                      </div>
+                      <div class="playerB" layout="column" flex>
+                          <div class="formTitle">{{(appContent.newGame.playerBName) ? appContent.newGame.playerBName :
+                              'Équipe B'}}
+                          </div>
+                          <md-contact-chips
+                                  ng-model="appContent.newGame.playersB"
+                                  md-contacts="appContent.searchPlayer($query)"
+                                  md-contact-name="name"
+                                  md-contact-image="avatar"
+                                  md-contact-email="nickname"
+                                  md-require-match
+                                  filter-selected="false"
+                                  placeholder="Joueurs équipe B">
+                          </md-contact-chips>
+                          <md-input-container>
+                              <label>Score équipe B</label>
+                              <input ng-model="appContent.newGame.scoreB" type="number" required/>
+                          </md-input-container>
+                      </div>
+                  </div>
+                      <md-input-container>
+                          <label>Date de la rencontre (optionnel)</label>
+                          <input type="date" ng-model="appContent.newGame.date"/>
+                      </md-input-container>
+                      <md-button class="md-raised md-primary">Ajouter ce résultat</md-button>
+              </form>
+          </div>
+
+
+          <div ng-if="appContent.games.length >= 1" class="list_of_games">
+              <md-content>
+                  <div class="game noselect"
+                       ng-repeat="game in appContent.games | orderBy:'createdAt':true | limitTo : gamesShown : 0"
+                       layout="column">
+                      <div layout="row">
+                          <span class="player-name left" ng-class="{'winner':game.teamAVictory}" flex>
+                              {{appContent.teamFromId(game.teamAId).name}}
+                              <md-tooltip>Gains de l'équipe : {{(game.teamAPointsEarned) | number:0}}</md-tooltip>
+                          </span>
+                          <span class="score left" ng-class="{'winner':game.teamAVictory}">{{game.scoreA}}</span>
+                          <span class="vs"> - </span>
+                          <span class="score right" ng-class="{'winner':!game.teamAVictory}">{{game.scoreB}}</span>
+                          <span class="player-name right" ng-class="{'winner':!game.teamAVictory}" flex>
+                              {{appContent.teamFromId(game.teamBId).name}}
+                              <md-tooltip>
+                                  Gains de l'équipe : {{(game.teamBPointsEarned) | number:0}}
+                              </md-tooltip>
+                          </span>
+                      </div>
+                      <div class="cotes" layout="row">
+                          <div class="left" ng-class="{'winner-gamble':game.teamAExpectedVictory}" flex="45">
+                              {{game.teamAQuotation | number:2}}
+                          </div>
+                          <div class="vs" flex></div>
+                          <div class="right" ng-class="{'winner-gamble':!game.teamAExpectedVictory}" flex="45">
+                              {{game.teamBQuotation | number:2}}
+                          </div>
+                      </div>
+                      <div class="composition" layout="row">
+                          <div class="left gamePlayers" flex="40">
+                          <span
+                                  ng-repeat="player in appContent.playersOfTeam(game.teamAId, appContent.teamFromId(game.teamAId).playersIds)">
+                                      {{player.name}}{{$last ? '' : ', '}}
+                                  </span>
+                              <md-tooltip>
+                                  Gains par joueur :
+                                  {{(game.teamAPointsEarned)/(appContent.teamFromId(game.teamAId).playersIds.length) |
+                                  number:0}}
+                              </md-tooltip>
+                          </div>
+                          <div class="vs" flex></div>
+                          <div class="right gamePlayers" flex="40">
+                          <span ng-repeat="player in appContent.playersOfTeam(game.teamBId, appContent.teamFromId(game.teamBId).playersIds)">
+                                      {{player.name}}{{$last ? '' : ', '}}
+                                  </span>
+                              <md-tooltip>
+                                  Gains par joueur :
+                                  {{(game.teamBPointsEarned)/(appContent.teamFromId(game.teamBId).playersIds.length) |
+                                  number:0}}
+                              </md-tooltip>
+                          </div>
+                      </div>
+                      <div class="date" ng-click="game.showdetails = game.showdetails?false:true" flex>
+                          <span class="date">{{game.date | date : "longDate"}}</span>
+                      </div>
+					<pre ng-show="game.showdetails">
+							{{game | json}}
+					</pre>
+                  </div>
+                  <div layout="row">
+                      <md-button class="md-accent" flex ng-click="showMore()">Montrer plus</md-button>
+                  </div>
+              </md-content>
+          </div>
+      </md-content>
+    </div>
+</div>
