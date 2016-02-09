@@ -193,74 +193,74 @@
      * @returns {{user: string, date: *, playerAExpectedVictory: boolean, playerAVictory: boolean, playerAId: (playerA.id|*), playerAName: (playerA.name|*), scoreA: Number, playerARatingBeforeGame: Number, playerARatingAfterGame: (playerA.rating|*), playerAQuotation: number, playerBId: (playerB.id|*), playerBName: (playerB.name|*), scoreB: Number, playerBRatingBeforeGame: Number, playerBRatingAfterGame: (playerB.rating|*), playerBQuotation: number}}
      */
     function prepareGameData(teamA, teamB) {
-        var prepareGameDataPromise = $q.defer();
-        var ratingA = parseInt(teamA.rating);
-        var ratingB = parseInt(teamB.rating);
+      var prepareGameDataPromise = $q.defer();
+      var ratingA = parseInt(teamA.rating);
+      var ratingB = parseInt(teamB.rating);
 
-        var scoreA = parseInt(self.newGame.scoreA);
-        var scoreB = parseInt(self.newGame.scoreB);
+      var scoreA = parseInt(self.newGame.scoreA);
+      var scoreB = parseInt(self.newGame.scoreB);
 
-        var scores = scoresForRating(scoreA, scoreB);
-        var scoreAForRating = scores.A;
-        var scoreBForRating = scores.B;
+      var scores = scoresForRating(scoreA, scoreB);
+      var scoreAForRating = scores.A;
+      var scoreBForRating = scores.B;
 
 
-        var newRatings = ratingService.getNewRatings(
-            ratingA,
-            ratingB,
-            scoreAForRating,
-            scoreBForRating,
-            teamA.gamesCount,
-            teamB.gamesCount
-        );
+      var newRatings = ratingService.getNewRatings(
+        ratingA,
+        ratingB,
+        scoreAForRating,
+        scoreBForRating,
+        teamA.gamesCount,
+        teamB.gamesCount
+      );
 
-        teamA.rating = newRatings.newRatings.A;
-        teamB.rating = newRatings.newRatings.B;
+      teamA.rating = newRatings.newRatings.A;
+      teamB.rating = newRatings.newRatings.B;
 
-        var teamAExpectedVictory = (newRatings.expectedResult.A > newRatings.expectedResult.B);
+      var teamAExpectedVictory = (newRatings.expectedResult.A > newRatings.expectedResult.B);
 
-        var game = {
-            user: $scope.user,
-            date: prepareDate(),
-            teamAExpectedVictory: teamAExpectedVictory,
-            teamAVictory: (scoreA > scoreB),
+      var game = {
+        user: $scope.user,
+        date: prepareDate(),
+        teamAExpectedVictory: teamAExpectedVictory,
+        teamAVictory: (scoreA > scoreB),
 
-            teamAId: teamA.id,
-            scoreA: scoreA,
-            teamARatingBeforeGame: ratingA,
-            teamARatingAfterGame: teamA.rating,
-            teamAQuotation: Math.round((1 / newRatings.expectedResult.A) * 100) / 100,
+        teamAId: teamA.id,
+        scoreA: scoreA,
+        teamARatingBeforeGame: ratingA,
+        teamARatingAfterGame: teamA.rating,
+        teamAQuotation: Math.round((1 / newRatings.expectedResult.A) * 100) / 100,
 
-            teamBId: teamB.id,
-            scoreB: scoreB,
-            teamBRatingBeforeGame: ratingB,
-            teamBRatingAfterGame: teamB.rating,
-            teamBQuotation: Math.round((1 / newRatings.expectedResult.B) * 100) / 100
-        };
+        teamBId: teamB.id,
+        scoreB: scoreB,
+        teamBRatingBeforeGame: ratingB,
+        teamBRatingAfterGame: teamB.rating,
+        teamBQuotation: Math.round((1 / newRatings.expectedResult.B) * 100) / 100
+      };
 
-        teamA.gamesCount += 1;
-        teamB.gamesCount += 1;
+      teamA.gamesCount += 1;
+      teamB.gamesCount += 1;
 
-        game.teamAPointsEarned = game.teamARatingAfterGame - game.teamARatingBeforeGame;
-        game.teamBPointsEarned = game.teamBRatingAfterGame - game.teamBRatingBeforeGame;
+      game.teamAPointsEarned = game.teamARatingAfterGame - game.teamARatingBeforeGame;
+      game.teamBPointsEarned = game.teamBRatingAfterGame - game.teamBRatingBeforeGame;
 
-        // update teams
-        teamService.update(teamA, game.teamAPointsEarned).then(function () {
-            $log.debug("teamA saved");
-            teamService.update(teamB, game.teamBPointsEarned).then(function () {
-                $log.debug("teamB Saved");
-                // udpate teams list
-                getTeams();
-                getPlayers();
-                prepareGameDataPromise.resolve(game);
-            });
+      // update teams
+      teamService.update(teamA, game.teamAPointsEarned).then(function () {
+        $log.debug("teamA saved");
+        teamService.update(teamB, game.teamBPointsEarned).then(function () {
+          $log.debug("teamB Saved");
+          // udpate teams list
+          getTeams();
+          getPlayers();
+          prepareGameDataPromise.resolve(game);
         });
+      });
 
-        return prepareGameDataPromise.promise;
+      return prepareGameDataPromise.promise;
     }
 
     function searchPlayerByName(searchString) {
-        return $filter("filter")(self.players, searchString);
+      return $filter("filter")(self.players, searchString);
     }
 
     /**
@@ -269,103 +269,112 @@
      */
     self.save = function () {
 
-        self.addingGame = true;
-        if (!gameIsValid()) {
-            return false;
-        }
+      self.addingGame = true;
+      if (!gameIsValid()) {
+        return false;
+      }
 
-        var teamsPrepared;
-        prepareTeams(self.newGame.playersA, self.newGame.playersB).then(function (teams) {
-            teamsPrepared = teams;
+      var teamsPrepared;
+      prepareTeams(self.newGame.playersA, self.newGame.playersB).then(function (teams) {
+        teamsPrepared = teams;
 
-            var teamA = teamsPrepared.A;
-            var teamB = teamsPrepared.B;
+        var teamA = teamsPrepared.A;
+        var teamB = teamsPrepared.B;
 
-            prepareGameData(teamA, teamB).then(function(game){
-                // store game :
-                teamgameService.add(game).then(function (newGame) {
-                    game = newGame;
-                    var gameLog = "Game [" + game.id + "], " + game.teamAId + " [" + game.teamARatingBeforeGame + "=>" + game.teamARatingAfterGame +
-                        "], " + game.teamBId + " [" + game.teamBRatingBeforeGame + "=>" + game.teamARatingAfterGame + "]";
+        prepareGameData(teamA, teamB).then(function(game){
+          // store game :
+          teamgameService.add(game).then(function (newGame) {
+            game = newGame;
+            var gameLog = "Game [" + game.id + "], " + game.teamAId + " [" + game.teamARatingBeforeGame + "=>" + game.teamARatingAfterGame +
+                "], " + game.teamBId + " [" + game.teamBRatingBeforeGame + "=>" + game.teamARatingAfterGame + "]";
 
-                    $log.debug(gameLog);
+            $log.debug(gameLog);
 
-                    // update games list
-                    getGames();
-                    getPlayers();
-                    getTeams();
-                    self.addingGame = false;
-                });
+            // update games list
+            getGames();
+            getPlayers();
+            getTeams();
+            self.addingGame = false;
+          });
 
-                // reset :
-                self.newGame = {
-                    date: game.date,
-                    playersA: [],
-                    playersB: []
-                };
-            });
+          // reset :
+          self.newGame = {
+            date: game.date,
+            playersA: [],
+            playersB: []
+          };
         });
+      });
 
     };
 
     self.loadAll = function () {
-        getGames();
-        getPlayers();
-        getTeams();
+      getGames();
+      getPlayers();
+      getTeams();
     };
 
     $scope.refreshAll = self.loadAll;
 
 
     self.searchPlayer = function(playerName){
-        self.playerSearched = playerName;
-        return searchPlayerByName(playerName);
+      self.playerSearched = playerName;
+      return searchPlayerByName(playerName);
     };
 
     self.createPlayer = function (name) {
-        playerService.add(name).then(function (newPlayer) {
-            self.playerSearched = "";
-            self.players.push(newPlayer);
-        });
+      playerService.add(name).then(function (newPlayer) {
+        self.playerSearched = "";
+        self.players.push(newPlayer);
+      });
     };
 
     self.teamFromId = function(teamId){
-        for(var i= 0;i<self.teams.length;i++){
-            if(teamId === self.teams[i].id){
-                return self.teams[i];
-            }
+      for(var i= 0;i<self.teams.length;i++){
+        if(teamId === self.teams[i].id){
+          return self.teams[i];
         }
+      }
     };
 
     self.playersOfTeam = function(teamId, playersIds){
-        if(!playersIds){
-            return [];
+      if(!playersIds){
+        return [];
+      }
+      if(self.playersOfTeams[teamId]){
+        return self.playersOfTeams[teamId];
+      }
+      var players = [];
+      for(var i= 0;i < self.players.length;i++){
+        for(var j=0;j<playersIds.length;j++){
+          if(self.players[i] && playersIds[j] === self.players[i].id){
+            players.push(self.players[i]);
+          }
+          if(playersIds.length === players.length){
+            break;
+          }
         }
-        if(self.playersOfTeams[teamId]){
-            return self.playersOfTeams[teamId];
+        if(playersIds.length === players.length){
+          break;
         }
-        var players = [];
-        for(var i= 0;i < self.players.length;i++){
-            for(var j=0;j<playersIds.length;j++){
-                if(self.players[i] && playersIds[j] === self.players[i].id){
-                    players.push(self.players[i]);
-                }
-                if(playersIds.length === players.length){
-                    break;
-                }
-            }
-            if(playersIds.length === players.length){
-                break;
-            }
-        }
-        self.playersOfTeams[teamId] = players;
-        return players;
+      }
+      self.playersOfTeams[teamId] = players;
+      return players;
     };
 
 
     self.teamFilter = function (team) {
-        return team.playersIds.length >= 2;
+      return team.playersIds.length >= 2;
     };
+
+    self.simulateAddGame = function() {
+      var game = teamgameService.format();
+      teamgameService.add(game).then(
+        function(){
+          getGames();
+        }
+      );
+    }
   };
 
   var testContentLink = function (scope, element, attrs, controller) {

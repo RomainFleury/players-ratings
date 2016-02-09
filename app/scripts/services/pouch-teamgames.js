@@ -14,36 +14,37 @@
       this.name = name;
       this.rating = rating ? rating : 1500;
     }
-  }
+  };
+
 
   class Game {
-    constructor(userId) {
-      var teamAExpectedVictory = 0.5;
-      var scoreA = 2;
-      var scoreB = 0;
-      var teamA = new Team("A", 1527);
-      // {
-      //     "id": 1,
-      //     "name": "A",
-      //     "rating": "1500"
-      // };
-      var ratingA = teamA.rating;
-      var teamB = new Team("B", 1473);
-      // {
-      //     "id": 1,
-      //     "name": "A",
-      //     "rating": "1500"
-      // };
-      var ratingB = teamB.rating;
+    constructor(game, teamA, teamB, userName) {
+      var scoreA = game ? game.scoreA : 0;
+      var scoreB = game ? game.scoreB : 0;
+      var teamA = teamA ? teamA : new Team("A", 1527);
+      var ratingA = teamA ? teamA.rating : 1500;
+      var teamB = teamB ? teamB : new Team("B", 1473);
+      var ratingB = teamB ? teamB.rating : 1500;
       var coteA = 2;
       var coteB = 2;
 
-      this.userId = userId
+      var colors = {
+        1:'red',
+        2:'yellow',
+        3:'green',
+        4:'blue',
+        5:'lightblue'
+      }
+
+      this.color = colors[Math.floor(Math.random()*10)]
+
+      this.userId = userName;
       var rand = Math.floor(Math.random(100)*100);
       var d = new Date();
       this.id = d.getTime()+"-"+rand;
       this.date = d;
-      this.teamAExpectedVictory = teamAExpectedVictory;
+      this.teamA = teamA;
+      this.teamAExpectedVictory = 0.5;
       this.teamAVictory = (scoreA > scoreB);
       this.teamAId = teamA.id;
       this.scoreA = scoreA;
@@ -53,13 +54,21 @@
       this.teamAQuotation = Math.round((1 / coteA) * 100) / 100;
 
       this.teamBId = teamB.id;
+      this.teamB = teamB;
       this.scoreB = scoreB;
       this.teamBPointsEarned = (teamB.rating - ratingB);
       this.teamBRatingBeforeGame = ratingB;
       this.teamBRatingAfterGame = teamB.rating;
       this.teamBQuotation = Math.round((1 / coteB) * 100) / 100;
+      this.userName = userName
+
+      return this.resolve();
     }
-  }
+
+    resolve(){
+      return this;
+    }
+  };
 
   angular.module("games").provider("pouchTeamgamesService", [function () {
 
@@ -71,86 +80,61 @@
       // PARSE
       var teamGamesDb = new PouchDB('teamgames');
 
-      function prepareGameToList(savedGame) {
-          var tmp = new Game;
-          tmp.id = savedGame.id;
-          tmp.username = savedGame.attributes.username;
-          tmp.date = savedGame.attributes.date;
-          tmp.teamAExpectedVictory = savedGame.attributes.teamAExpectedVictory;
-          tmp.teamAVictory = savedGame.attributes.teamAVictory;
-          tmp.teamAId = savedGame.attributes.teamAId;
-          tmp.scoreA = savedGame.attributes.scoreA;
-          tmp.teamAPointsEarned = savedGame.attributes.teamAPointsEarned;
-          tmp.teamARatingBeforeGame = savedGame.attributes.teamARatingBeforeGame;
-          tmp.teamARatingAfterGame = savedGame.attributes.teamARatingAfterGame;
-          tmp.teamAQuotation = savedGame.attributes.teamAQuotation;
-          tmp.teamBId = savedGame.attributes.teamBId;
-          tmp.scoreB = savedGame.attributes.scoreB;
-          tmp.teamBPointsEarned = savedGame.attributes.teamBPointsEarned;
-          tmp.teamBRatingBeforeGame = savedGame.attributes.teamBRatingBeforeGame;
-          tmp.teamBRatingAfterGame = savedGame.attributes.teamBRatingAfterGame;
-          tmp.teamBQuotation = savedGame.attributes.teamBQuotation;
-          tmp.createdAt = savedGame.createdAt;
-          tmp.username = userName;
-          return tmp;
-      }
-
       function getGames() {
-          var deferred = $q.defer();
-          var game = Parse.Object.extend("teamgame");
-          var query = new Parse.Query(game);
-          query.equalTo("username", userName);
-          query.find({
-              success: function (results) {
-                  var games = [];
-                  if (results.length > 0) {
-                      for (var i = 0; i < results.length; i++) {
-                          games[i] = prepareGameToList(results[i]);
-                      }
-                  }
-                  deferred.resolve(games);
-              },
-              error: function (error) {
-                  //alert("Error: " + error.code + " " + error.message);
-                  deferred.reject(error);
-              }
-          });
-          return deferred.promise;
+        var deferred = $q.defer();
+        teamGamesDb.allDocs({
+          include_docs: true,
+          attachments: true
+        }, function(error, result){
+          // {total_rows: 0, offset: 0, rows: []}
+          var games = result.rows;
+          for (var i = 0; i < result.rows.length; i++) {
+            games[i] = result.rows[i].doc;
+          }
+          deferred.resolve(games);
+        });
+        return deferred.promise;
       }
 
       function saveGame(game) {
-          var deferred = $q.defer();
-          //var ACLs = User.acl();
-          teamGamesDb.put(game).then(
-              function (savedGames) {
-                  deferred.resolve(prepareGameToList(savedGames));
-              }
-          );
-          return deferred.promise;
+        var deferred = $q.defer();
+        //var ACLs = User.acl();
+        teamGamesDb.put(game).then(
+          function (savedGames) {
+            deferred.resolve(prepareGameToList(savedGames));
+          }
+        );
+        return deferred.promise;
       }
 
       function createGame(game) {
-        deferred = $q.defer();
-        teamGamesDb.post(game, function(error, result){
-          deffered.resolve(response);
-        })
+        var deferred = $q.defer();
+        var toSave = new Game(game);
+
+        teamGamesDb.post(toSave, function(error, result){
+          deferred.resolve(result);
+        });
+        return deferred.promise;
       }
 
       function addGame(game) {
+        if (!game.date) {
           var gameDate = new Date();
-          if (!game.date) {
-              game.date = gameDate;
-          }
+          game.date = gameDate;
+        }
 
-          // save games if player list changed
-          return saveGame(game);
+        return createGame(game);
+
+        // // save games if player list changed
+        // return saveGame(game);
       }
 
       return {
-          "username": userName,
-          "format": new Game,
-          "list": getGames,
-          "add": addGame
+          username: userName,
+          teamFormat: function(name, rating){return new Team(name, rating)},
+          format: function(game, teamA, teamB){return new Game(game, teamA, teamB, self.username)},
+          list: getGames,
+          add: addGame
       };
     }];
   }]);
