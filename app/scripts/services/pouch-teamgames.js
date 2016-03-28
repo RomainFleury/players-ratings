@@ -6,17 +6,6 @@
 (function () {
   "use strict";
 
-  class Team {
-    constructor(name, rating) {
-      var rand = Math.floor(Math.random(100)*100);
-      var d = new Date();
-      this.id = d.getTime()+"-"+rand;
-      this.name = name;
-      this.rating = rating ? rating : 1500;
-    }
-  };
-
-
   class Game {
     constructor(game, teamA, teamB, userName) {
       var scoreA = game ? game.scoreA : 0;
@@ -74,7 +63,7 @@
 
     this.userName = "";
 
-    this.$get = ["$log", "$q", function ($log, $q) {
+    this.$get = ["$log", "$q", "pouchTeamsService", function ($log, $q, teamsService) {
       var userName = this.userName;
 
       // PARSE
@@ -131,8 +120,8 @@
 
       return {
           username: userName,
-          teamFormat: function(name, rating){return new Team(name, rating)},
-          format: function(game, teamA, teamB){return new Game(game, teamA, teamB, self.username)},
+          format: function(game, teamA, teamB){return new Game(
+            game, teamsService.format(teamA), teamsService.format(teamB), self.username)},
           list: getGames,
           add: addGame
       };

@@ -3,7 +3,7 @@
 
   angular.module("bestPlayerApp").directive("testContent", function () {
     var testContentDirectiveController = function ($scope, $log, $mdSidenav, $mdToast,
-      $q, ratingService, playerService, teamgameService, teamService, $filter, gamesService) {
+      $q, ratingService, playerService, teamgameService, teamService, $filter) {
     var self = this;
 
     self.username = teamgameService.username;
@@ -18,6 +18,8 @@
         scoreA:null,
         scoreB:null
     };
+
+    self.newPlayer = playerService.format();
 
     self.playersOfTeams = {};
 
@@ -263,6 +265,14 @@
       return $filter("filter")(self.players, searchString);
     }
 
+    self.saveNewPlayer = function() {
+      console.log('saveNewPlayer');
+      console.log(self.newPlayer);
+      playerService.add(self.newPlayer)
+      getPlayers();
+      self.newPlayer = playerService.format();
+    }
+
     /**
      * saves game form, updates players rankings, updates view,
      * @returns {boolean}
@@ -396,7 +406,9 @@
       templateUrl: "views/test-content.html",
       replace: true,
       controllerAs: "testContent",
-      controller: ["$scope", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "parsePlayersService", "pouchTeamgamesService", "parseTeamsService", "$filter", "parseGamesService", testContentDirectiveController],
+      controller: ["$scope", "$log", "$mdSidenav", "$mdToast", "$q",
+      "AdaptedEloRating", "pouchPlayersService", "pouchTeamgamesService",
+      "pouchTeamsService", "$filter", testContentDirectiveController],
       link: testContentLink
     };
   });

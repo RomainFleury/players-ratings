@@ -10,7 +10,7 @@
         this.userName = "";
         this.basePoints = 1500;
 
-        this.$get = ["$log", "$q", "parsePlayersService", function ($log, $q, playerService) {
+        this.$get = ["$log", "$q", "pouchPlayersService", function ($log, $q, playerService) {
 
             var userName = this.userName;
             var basePoints = this.basePoints;

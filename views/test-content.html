@@ -13,21 +13,117 @@
     <div ng-if="testContent.addingGame" layout="row" layout-align="space-around">
         <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
-    <div class="newGameEditor" ng-if="!testContent.addingGame"></div>
-    <md-input-container>
-        <label>Search</label>
-        <input ng-model="search">
-      </md-input-container>
-    <md-list>
-      <!-- <md-subheader class="md-no-sticky">3 line item</md-subheader> -->
-      <md-list-item class="md-3-line" ng-repeat="game in testContent.games | filter : search  | orderBy:date | limitTo:3">
-        <img ng-src="app/assets/images/default-avatar.jpg" class="md-avatar" alt="" />
-        <div class="md-list-item-text" layout="column" style="border-left: 3px solid {{game.color}}">
-          <p>{{ game.id }} @ {{ game.date }}</p>
 
-        </div>
-      </md-list-item>
-      <md-divider ></md-divider>
-    </md-list>
-  </md-content>
+
+    <div ng-if="testContent.addingGame" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    </div>
+    <div class="newGameEditor" ng-if="!testContent.addingGame">
+
+        <form ng-if="testContent.showGameEditor" name="newGameForm" layout="column"
+              ng-submit="testContent.save()">
+            <md-button class="md-warn md-fab md-fab-top-right" ng-show="testContent.playerSearched.length >= 4"
+                       ng-click="testContent.createPlayer(testContent.playerSearched)"
+                       type="button">
+                <i class="fa fa-plus"></i>
+                <md-tooltip>
+                    Créer le joueur "{{testContent.playerSearched}}"
+                </md-tooltip>
+            </md-button>
+            <div layout="row">
+                <div class="playerA" layout="column" flex>
+                    <div class="formTitle">{{(testContent.newGame.playerAName) ? testContent.newGame.playerAName :
+                        'Equipe A'}}
+                    </div>
+
+                    <md-contact-chips
+                            ng-model="testContent.newGame.playersA"
+                            md-contacts="testContent.searchPlayer($query)"
+                            md-contact-name="name"
+                            md-contact-image="avatar"
+                            md-contact-email="nickname"
+                            md-require-match
+                            filter-selected="false"
+                            placeholder="Joueurs équipe A">
+                    </md-contact-chips>
+
+                    <md-input-container>
+                        <label>Score équipe A</label>
+                        <input ng-model="testContent.newGame.scoreA" type="number" required/>
+                    </md-input-container>
+                </div>
+                <div class="playerB" layout="column" flex>
+                    <div class="formTitle">{{(testContent.newGame.playerBName) ? testContent.newGame.playerBName :
+                        'Équipe B'}}
+                    </div>
+                    <md-contact-chips
+                            ng-model="testContent.newGame.playersB"
+                            md-contacts="testContent.searchPlayer($query)"
+                            md-contact-name="name"
+                            md-contact-image="avatar"
+                            md-contact-email="nickname"
+                            md-require-match
+                            filter-selected="false"
+                            placeholder="Joueurs équipe B">
+                    </md-contact-chips>
+                    <md-input-container>
+                        <label>Score équipe B</label>
+                        <input ng-model="testContent.newGame.scoreB" type="number" required/>
+                    </md-input-container>
+                </div>
+            </div>
+                <md-input-container>
+                    <label>Date de la rencontre (optionnel)</label>
+                    <input type="date" ng-model="testContent.newGame.date"/>
+                </md-input-container>
+                <md-button class="md-raised md-primary">Ajouter ce résultat</md-button>
+        </form>
+    </div>
+
+    <div flex layout="row">
+      <div flex="50">
+        <md-input-container>
+          <label>Search in games</label>
+          <input ng-model="gamesSearch">
+        </md-input-container>
+        <hr>
+        <md-list>
+          <!-- <md-subheader class="md-no-sticky">3 line item</md-subheader> -->
+          <md-list-item class="md-3-line" ng-repeat="game in testContent.games | filter : gamesSearch  | orderBy:date | limitTo:10">
+            <img ng-src="app/assets/images/default-avatar.jpg" class="md-avatar" alt="" />
+            <div class="md-list-item-text" layout="column" style="border-left: 3px solid {{game.color}}">
+              <p>{{ game.id }} @ {{ game.date }}</p>
+            </div>
+          </md-list-item>
+          <md-divider ></md-divider>
+        </md-list>
+      </md-content>
+    </div>
+    <div flex="50">
+      <md-input-container>
+        <label>Search in players</label>
+        <input ng-model="playerSearch">
+      </md-input-container>
+      <form name="newPlayerForm" layout="column"
+        ng-submit="testContent.saveNewPlayer()">
+        <md-input-container>
+          <label>Player Name</label>
+          <input ng-model="testContent.newPlayer.name" required >
+        </md-input-container>
+        <md-button class="md-raised md-primary">Ajouter ce joueur</md-button>
+      </form>
+      <hr>
+      <md-list>
+        <!-- <md-subheader class="md-no-sticky">3 line item</md-subheader> -->
+        <md-list-item class="md-3-line" ng-repeat="player in testContent.players | filter : players  | orderBy:id | limitTo:10">
+          <img ng-src="player.avatar" src="app/assets/images/default-avatar.jpg" class="md-avatar" alt="" />
+          <div class="md-list-item-text" layout="column" style="border-left: 3px solid {{game.color}}">
+            <p>{{ player.id }} @ {{ player.name }} is {{ player.nickname }}</p>
+          </div>
+        </md-list-item>
+        <md-divider ></md-divider>
+      </md-list>
+    </md-content>
+    </div>
+
 </div>

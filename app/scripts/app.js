@@ -12,7 +12,7 @@
         "teams"
     ]);
 
-    angular.module("bestPlayerApp").config(["$mdThemingProvider", "pouchTeamgamesServiceProvider", "parsePlayersServiceProvider", "parseTeamsServiceProvider", function ($mdThemingProvider, gamesServiceProvider, playersServiceProvider, parseTeamsServiceProvider) {
+    angular.module("bestPlayerApp").config(["$mdThemingProvider", "pouchTeamgamesServiceProvider", "pouchPlayersServiceProvider", "pouchTeamsServiceProvider", function ($mdThemingProvider, gamesServiceProvider, playersServiceProvider, teamsServiceProvider) {
         $mdThemingProvider.theme("default")
             .primaryPalette("blue-grey")
             .accentPalette("brown")
@@ -27,7 +27,7 @@
 
         gamesServiceProvider.userName = userName;
         playersServiceProvider.userName = userName;
-        parseTeamsServiceProvider.userName = userName;
+        teamsServiceProvider.userName = userName;
 
     }]);
 
@@ -125,26 +125,7 @@
              *
              * @returns {string}
              */
-            function randomTeamName(players){
-                if(players.length === 1){
-                    return players[0].name;
-                }else{
-                    var names = [
-                        "toffee","croissant", "oat","cake", "gummies", "ice", "cream", "danish",
-                        "jellybeans", "macaroon", "candy", "wafer", "sesame",
-                        "snaps", "pie", "danish", "chupa chups", "chocolate bar", "cotton",
-                        "candy", "sweet", "cheesecake", "ice", "cream", "jelly",
-                        "brownie", "souffle", "carrot cake", "toffee", "ice cream", "icing", "bear",
-                        "claw", "cookie", "topping", "claw", "pastry", "lollipop", "topping","ham","fine","ugly","fast",
-                        "jaws","bag","sky","team","soldiers", "pizza", "water", "beer", "foot", "head"
-                    ];
 
-                    var a = Math.floor(Math.random() * names.length);
-                    var b = Math.floor(Math.random() * names.length);
-
-                    return names[a].charAt(0).toUpperCase() + names[a].substr(1) +" "+ names[b];
-                }
-            }
 
             /**
              * Get a team from its players, or creates it.
@@ -432,7 +413,7 @@
             templateUrl: "views/app-content.html",
             replace: true,
             controllerAs: "appContent",
-            controller: ["$scope", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "parsePlayersService", "parseTeamgamesService", "parseTeamsService", "$filter", appContentDirectiveController],
+            controller: ["$scope", "$log", "$mdSidenav", "$mdToast", "$q", "AdaptedEloRating", "pouchPlayersService", "pouchTeamgamesService", "pouchTeamsService", "$filter", appContentDirectiveController],
             link: appContentLink
         };
     });
