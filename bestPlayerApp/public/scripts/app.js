@@ -2,7 +2,7 @@
     "use strict";
 
     Parse.initialize("n3hvJCnz3q7egqqKq5QwPY0b64j5elVCV6WNdwZp", "Faixl3ZGd3cVgT205H2itrDIgyqmzyQZmxtrHKS1");
-
+    Parse.serverURL = 'https://parseapi.back4app.com'
 
     angular.module("bestPlayerApp", [
         "ngTouch",
